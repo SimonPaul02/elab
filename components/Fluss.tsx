@@ -5,6 +5,7 @@
 import type { CSSProperties, ReactElement } from 'react';
 
 type Pt = [number, number];
+type Pt3 = [number, number, number]; // u, v, z-Anteil im Modell
 const v = (o: Record<string, number | string>) => o as CSSProperties;
 const pts = (p: Pt[]) => p.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
 
@@ -50,7 +51,7 @@ const FARBE = { cad: 'var(--t-blue)', alt: 'var(--t-orange)', fach: 'var(--t-tea
 type Gruppe = keyof typeof FARBE;
 const TITEL: Record<Gruppe, string> = { cad: 'CAD UND BIM', alt: 'ALTE LVS', fach: 'FACHPLANER', regel: 'IHR REGELWERK' };
 
-const ZEILEN: [string, string, string, Gruppe, string, Pt | null, number][] = [
+const ZEILEN: [string, string, string, Gruppe, string, Pt3 | null, number][] = [
   // Reihenfolge = so, wie plua ai die Positionen findet (gemischt). OZ = Nummer nach dem Sortieren im Gewerk.
   // OZ, Kurztext, Menge, Herkunft, Herkunftstext, Bauteil im Modell (u, v, z-Anteil), Gewerk (Index in GEWERKE)
   ['02.01', 'Ständerwand W1', '412,5 m²', 'cad', 'Modell', [4, 2, 1], 3],

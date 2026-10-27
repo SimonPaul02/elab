@@ -1,5 +1,5 @@
 'use client';
-// Setzt den Scrollfortschritt der Fluss-Section als CSS-Variable --p (von -0,3 beim Hereinscrollen bis 1 am Ende).
+// Setzt den Scrollfortschritt der Fluss-Section als CSS-Variable --P (von -0,3 beim Hereinscrollen bis 1 am Ende).
 import { useEffect, useRef, type ReactNode } from 'react';
 
 export default function FlussScroll({ children }: { children: ReactNode }) {
@@ -13,7 +13,7 @@ export default function FlussScroll({ children }: { children: ReactNode }) {
       const kopf = 68, r = el.getBoundingClientRect();
       const weg = el.offsetHeight - (window.innerHeight - kopf);
       const p = Math.min(1, Math.max(-0.3, (kopf - r.top) / Math.max(1, weg)));
-      el.style.setProperty('--p', p.toFixed(4));
+      el.style.setProperty('--P', p.toFixed(4));
     };
     const plan = () => { if (!raf) raf = requestAnimationFrame(update); };
     update();
