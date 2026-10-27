@@ -1,0 +1,1 @@
+Hier freigegebene Logos ablegen (SVG oder PNG) und in lib/content.ts beim Eintrag als `logo` eintragen.
