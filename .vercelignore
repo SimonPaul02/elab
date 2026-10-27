@@ -1,0 +1,4 @@
+# Das Demo-Video samt Aufnahme-Pipeline gehoert ins Repo, aber nicht ins Deploy:
+# es sind ~47 MB, die Vercel sonst bei jedem Deploy mit hochlaedt. Das fertige
+# Video liegt als public/demo.mp4 im Build.
+demo-video

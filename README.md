@@ -18,16 +18,21 @@ npm run build    # fertige Seite in ./out (auf jeden Webspace, Vercel, Netlify)
 | `app/globals.css` | Gestaltung. Farben als Tokens oben, heller und dunkler Modus automatisch |
 | `lib/content.ts` | Alle Texte, Integrationen, Ablauf, Prüfprotokoll, Datenschutz, Kontaktadresse |
 | `components/Icons.tsx` | Logo plua ai und neutrale Symbole je Kategorie |
-| `public/demo.mp4` | Demo-Video (1280 × 800, 2:49) mit Standbild `demo-poster.webp` |
+| `public/demo.mp4` | Demo-Video (1440 × 900, 2:49) mit Standbild `demo-poster.webp` |
+| `demo-video/` | Alles zum Demo-Video: klickbarer Prototyp, Playwright-Aufnahme, Master und frühere Fassungen. Eigener README darin. Per `.vercelignore` vom Deploy ausgenommen |
 
 ## Logos der Integrationen
 
-Die Kacheln zeigen bewusst neutrale Symbole je Kategorie, keine Markenlogos. Wer ein Logo zeigen darf (Freigabe
-des Herstellers oder Partnerprogramm), legt die Datei unter `public/logos/` ab und trägt sie in `lib/content.ts` ein:
+Für 22 Einträge liegt unter `public/logos/` ein Logo und ist in `lib/content.ts` am Feld `logo` eingetragen:
 
 ```ts
-{ id: 'orca', name: 'ORCA AVA', note: 'LVs und Preise importieren', glyph: 'ava', logo: '/logos/orca.svg' },
+{ id: 'orca', name: 'ORCA AVA', note: 'LVs und Preise importieren', glyph: 'ava', logo: '/logos/orca-wort.webp' },
 ```
+
+Die Kachel bekommt dann die Klasse `mit-logo` (weißer Grund, Breite nach Bedarf, passt auch für Wortmarken). Einträge
+ohne Logo — Normen wie VOB/A, GAEB, IFC, XVergabe, Autodesk Construction Cloud — zeigen weiter das neutrale Symbol ihrer
+Kategorie. Vor dem Livegang prüfen, ob für jedes gezeigte Logo eine Freigabe des Herstellers oder ein Partnerprogramm
+vorliegt; ohne Freigabe die Zeile in `lib/content.ts` einfach ohne `logo` lassen.
 
 ## Vor dem Livegang
 

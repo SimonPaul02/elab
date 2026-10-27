@@ -1,0 +1,1444 @@
+<!doctype html>
+<!-- Klickbarer Prototyp für das Demo-Video „LV mit KI erstellen“ (Video 19, Fassung 3). Kein Produktcode: alle Daten,
+     Mengen, Firmen und Preise sind Beispielwerte; das Skript ../aufnahme/19-demo-lv-ki.mjs bedient die Seite. -->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>ava · LV mit KI erstellen (Demo)</title>
+<link rel="stylesheet" href="fonts/inter.css">
+<style>
+:root {
+  --bg:#f7f7f8; --line:#ececef; --line2:#f4f4f5; --text:#18181b; --soft:#52525b; --muted:#8a8a93;
+  --accent:#e8622c; --accent-bg:#fdf1eb; --accent-line:#f8cdb8;
+  --green:#15803d; --green-bg:#f0fdf4; --green-line:#bbf7d0; --amber:#b45309; --amber-bg:#fffbeb; --amber-line:#fde68a;
+  --red:#dc2626; --red-bg:#fef2f2; --blue:#2563eb; --blue-bg:#eff6ff; --purple:#7c3aed; --purple-bg:#f5f3ff;
+  --teal:#0d9488; --teal-bg:#f0fdfa; --pink:#db2777; --pink-bg:#fdf2f8; --lime:#65a30d; --lime-bg:#f7fee7;
+  --r:10px; --sh:0 1px 2px rgba(16,24,40,.05); --sh2:0 12px 40px rgba(16,24,40,.16);
+}
+* { box-sizing:border-box; }
+html, body { margin:0; height:100%; }
+body { font-family:'Inter Variable', Inter, system-ui, sans-serif; font-size:14px; color:var(--text); background:#fff; overflow:hidden; letter-spacing:-.006em; -webkit-font-smoothing:antialiased; }
+button { font:inherit; cursor:pointer; letter-spacing:inherit; }
+.btn { height:34px; padding:0 14px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--text); display:inline-flex; align-items:center; gap:7px; white-space:nowrap; box-shadow:var(--sh); transition:background .15s, border-color .15s; }
+.btn:hover { background:#fafafa; border-color:#e0e0e4; }
+.btn.primary { background:#18181b; border-color:#18181b; color:#fff; }
+.btn.primary:hover { background:#27272a; }
+.btn.ki { background:linear-gradient(135deg,#e8622c,#f08a4b); border:0; color:#fff; box-shadow:0 2px 8px rgba(232,98,44,.3); }
+.btn.ghost { border-color:transparent; box-shadow:none; background:none; color:var(--soft); }
+.btn.ghost:hover { background:#f4f4f5; }
+.btn.big { height:40px; padding:0 18px; font-size:14.5px; }
+.btn.sm { height:28px; padding:0 10px; font-size:12.5px; }
+.btn[disabled] { opacity:.4; pointer-events:none; }
+.muted { color:var(--muted); }
+.sp { flex:1; }
+.tag { display:inline-flex; align-items:center; gap:4px; height:20px; padding:0 7px; border-radius:6px; font-size:11.5px; font-weight:500; white-space:nowrap; }
+.t-grau { background:#f4f4f5; color:var(--soft); }
+.t-ok { background:var(--green-bg); color:var(--green); }
+.t-gelb { background:var(--amber-bg); color:var(--amber); }
+.t-rot { background:var(--red-bg); color:var(--red); }
+.t-blau { background:var(--blue-bg); color:var(--blue); }
+.t-lila { background:var(--purple-bg); color:var(--purple); }
+.t-ki { background:var(--accent-bg); color:var(--accent); }
+.dot { width:7px; height:7px; border-radius:50%; display:inline-block; flex:none; }
+.seg { display:inline-flex; background:#f4f4f5; border-radius:9px; padding:3px; gap:2px; }
+.seg button { border:0; background:none; height:28px; padding:0 12px; border-radius:7px; color:var(--soft); font-size:13px; display:inline-flex; align-items:center; }
+.seg button.on { background:#fff; color:var(--text); box-shadow:0 1px 2px rgba(0,0,0,.08); font-weight:500; }
+.badge { display:inline-flex; align-items:center; justify-content:center; min-width:17px; height:17px; padding:0 5px; margin-left:6px; border-radius:9px; background:var(--accent); color:#fff; font-size:10.5px; font-weight:600; }
+.h-sec { font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.02em; display:flex; align-items:center; gap:8px; }
+.spin { display:inline-block; width:11px; height:11px; border:2px solid #e4e4e7; border-top-color:var(--accent); border-radius:50%; animation:sp .8s linear infinite; vertical-align:-1px; margin-right:6px; }
+@keyframes sp { to { transform:rotate(360deg); } }
+@keyframes fin { from { opacity:0; transform:translateY(5px); } }
+
+/* App-Rahmen */
+.rail { position:fixed; left:0; top:0; bottom:0; width:60px; border-right:1px solid var(--line); background:#fcfcfc; display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 0; z-index:5; }
+.logo { width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg,#e8622c,#f08a4b); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; margin-bottom:14px; font-size:15px; }
+.ri { width:40px; height:40px; border-radius:10px; border:0; background:none; color:#71717a; display:flex; align-items:center; justify-content:center; }
+.ri:hover { background:#f4f4f5; color:var(--text); }
+.ri.on { background:#f4f4f5; color:var(--text); }
+.ri svg { width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.ri.lock { color:var(--green); }
+.screen { position:absolute; inset:0 0 0 60px; display:none; flex-direction:column; background:#fff; }
+.screen.on { display:flex; }
+.top { height:60px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px; padding:0 20px; flex:none; }
+.crumb { font-size:13.5px; color:var(--muted); white-space:nowrap; }
+.crumb b { color:var(--text); font-weight:600; font-size:15px; }
+.pop { position:fixed; left:70px; bottom:14px; width:400px; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:var(--sh2); padding:16px 18px; z-index:30; display:none; animation:fin .25s ease-out; }
+.pop.on { display:block; }
+.pop h4 { margin:0 0 10px; font-size:15px; display:flex; align-items:center; gap:8px; }
+.pop .pi { display:flex; gap:10px; padding:7px 0; font-size:13px; line-height:1.45; border-top:1px solid var(--line2); }
+.pop .pi b { display:block; }
+.pop .pi .ok { color:var(--green); font-weight:700; }
+
+/* Projekte */
+.projekte { padding:28px 40px; overflow:auto; background:var(--bg); flex:1; }
+.pcard { background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:var(--sh); max-width:1120px; margin:0 auto; overflow:hidden; }
+.pcard-h { display:flex; align-items:center; gap:12px; padding:18px 22px; }
+.pcard-h b { font-size:18px; font-weight:600; }
+.conn { display:flex; gap:16px; padding:0 22px 16px; font-size:12.5px; color:var(--soft); }
+.conn span { display:inline-flex; align-items:center; gap:6px; }
+.ptable { width:100%; border-collapse:collapse; }
+.ptable td, .ptable th { padding:11px 22px; border-top:1px solid var(--line2); text-align:left; font-weight:400; }
+.ptable th { color:var(--muted); font-size:12px; font-weight:500; }
+.ptable .r { text-align:right; font-variant-numeric:tabular-nums; }
+
+/* Modal */
+.backdrop { position:fixed; inset:0; background:rgba(24,24,27,.35); backdrop-filter:blur(2px); display:none; align-items:flex-start; padding-top:14px; justify-content:center; z-index:10; }
+.backdrop.on { display:flex; }
+.modal { background:#fff; border-radius:16px; box-shadow:var(--sh2); display:flex; flex-direction:column; overflow:hidden; }
+.modal-h { padding:18px 24px 6px; display:flex; align-items:center; gap:14px; }
+.modal-h h3 { margin:0; font-size:17px; font-weight:600; }
+.modal-b { padding:14px 24px; flex:1; overflow:hidden; position:relative; }
+.modal-f { padding:12px 24px 16px; display:flex; gap:10px; justify-content:flex-end; align-items:center; }
+
+/* Wizard */
+#wizard { width:1370px; height:724px; }
+.steps { display:flex; gap:2px; margin-left:auto; }
+.step { display:flex; align-items:center; gap:7px; padding:5px 11px 5px 6px; border-radius:20px; color:var(--muted); font-size:13px; }
+.step i { font-style:normal; width:21px; height:21px; border-radius:50%; background:#f4f4f5; display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:600; }
+.step.on { color:var(--text); font-weight:500; }
+.step.on i { background:var(--text); color:#fff; }
+.step.done i { background:var(--green-bg); color:var(--green); }
+.pane { display:none; height:100%; }
+.pane.on { display:flex; }
+.cols { display:flex; gap:16px; width:100%; }
+.col { flex:1; display:flex; flex-direction:column; gap:10px; min-width:0; }
+.field label { display:block; font-size:12px; color:var(--muted); margin-bottom:5px; }
+.input { height:36px; border:1px solid var(--line); border-radius:8px; padding:0 12px; display:flex; align-items:center; width:100%; background:#fff; }
+.drop { border:1px solid var(--line); border-radius:12px; padding:14px; background:#fcfcfc; display:flex; flex-direction:column; gap:8px; flex:1; min-height:0; min-width:0; }
+.drop h4 { margin:0; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; }
+.drop .hint { font-size:12.5px; color:var(--muted); line-height:1.4; }
+.drop .acts { display:flex; gap:8px; }
+.files { display:flex; flex-direction:column; gap:5px; overflow:hidden; }
+.file { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:6px 10px; animation:fin .3s ease-out; }
+.ext { width:38px; height:22px; border-radius:5px; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; color:#fff; flex:none; }
+.ext.pdf { background:#ef4444; } .ext.dwg { background:#4f46e5; } .ext.xlsx { background:#16a34a; } .ext.docx { background:#2563eb; } .ext.x83, .ext.x84, .ext.x86 { background:#7c3aed; } .ext.ifc { background:#0d9488; } .ext.orca { background:#334155; } .ext.cal { background:#0369a1; }
+.file .nm { font-weight:500; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+.file .von { font-size:11.5px; color:var(--muted); white-space:nowrap; }
+.file .st { font-size:12px; color:var(--muted); margin-left:auto; text-align:right; white-space:nowrap; }
+.file .st.ok { color:var(--green); }
+.src { display:flex; gap:12px; align-items:flex-start; border:1px solid var(--line); border-radius:12px; padding:12px 14px; background:#fff; }
+.src .ico { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; flex:none; background:#f4f4f5; }
+.src b { font-size:14px; font-weight:600; } .src p { margin:3px 0 0; font-size:12.5px; color:var(--soft); line-height:1.45; }
+.src.neu { border-color:var(--accent-line); background:#fffaf7; }
+.rules { margin-top:8px; display:flex; flex-direction:column; gap:4px; }
+.rules div { font-size:12.5px; color:var(--text); display:flex; gap:7px; align-items:center; }
+.rules div::before { content:'§'; color:var(--accent); font-weight:600; width:10px; }
+.sw { margin-left:auto; width:34px; height:20px; border-radius:10px; background:var(--green); position:relative; flex:none; opacity:.85; }
+.sw::after { content:''; position:absolute; top:2px; right:2px; width:16px; height:16px; border-radius:50%; background:#fff; }
+.q { border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+.q .f { font-size:12px; color:var(--muted); margin-bottom:4px; }
+.q .t { font-weight:600; font-size:14.5px; margin-bottom:4px; }
+.q .w { font-size:13px; color:var(--soft); margin-bottom:10px; }
+.opts { display:flex; gap:8px; flex-wrap:wrap; }
+.opt { border:1px solid var(--line); background:#fff; border-radius:8px; padding:6px 12px; font-size:13px; }
+.opt.on { border-color:var(--text); background:#18181b; color:#fff; }
+.opt .rec { font-size:11px; opacity:.6; margin-left:6px; }
+
+/* Gewerke */
+.gw { display:flex; gap:18px; width:100%; }
+.gw-3d { width:520px; flex:none; border:1px solid var(--line); border-radius:12px; background:#fcfcfc; display:flex; flex-direction:column; position:relative; }
+.gw-3d svg { flex:1; width:100%; }
+.legend { display:flex; gap:12px; padding:10px 14px; font-size:12px; color:var(--soft); flex-wrap:wrap; border-top:1px solid var(--line); }
+.legend span { display:inline-flex; gap:6px; align-items:center; }
+.gtab { width:100%; border-collapse:collapse; font-size:13px; }
+.gtab td, .gtab th { padding:8px 10px; border-bottom:1px solid var(--line2); text-align:left; white-space:nowrap; }
+.gtab th { font-weight:500; color:var(--muted); font-size:12px; }
+.gtab .r { text-align:right; font-variant-numeric:tabular-nums; }
+.gtab tr.g { cursor:default; transition:background .2s; }
+.gtab tr.g:hover, .gtab tr.g.hov { background:#fafafa; }
+.gtab tr.me td { background:var(--accent-bg); }
+.gtab tr.me td:first-child { box-shadow:inset 3px 0 0 var(--accent); }
+.dec { border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+.dec .t { font-weight:600; margin-bottom:3px; }
+.dec .w { font-size:12.5px; color:var(--soft); margin-bottom:9px; }
+.lines { display:flex; flex-direction:column; gap:6px; font-size:12.5px; color:var(--soft); }
+.lines div { display:flex; gap:8px; }
+.lines .ok { color:var(--green); font-weight:700; }
+
+/* Erstellen */
+.gen { display:flex; gap:16px; width:100%; height:100%; }
+.gen-l { flex:1.35; display:flex; flex-direction:column; gap:10px; min-width:0; }
+.gen-r { flex:1; display:flex; flex-direction:column; gap:10px; min-width:0; }
+.phase { display:flex; gap:6px; }
+.ph { flex:1; border-radius:9px; padding:7px 10px; background:#f7f7f8; color:var(--muted); font-size:12px; line-height:1.3; transition:all .3s; }
+.ph b { display:block; font-size:12.5px; font-weight:600; }
+.ph.on { background:var(--accent-bg); color:var(--accent); }
+.ph.done { background:var(--green-bg); color:var(--green); }
+.sheet { border:1px solid var(--line); border-radius:12px; background:#fcfcfc; position:relative; flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+.sheet-h { display:flex; gap:5px; padding:8px 10px; border-bottom:1px solid var(--line); align-items:center; flex-wrap:wrap; }
+.chip { font-size:11.5px; border-radius:6px; padding:2px 7px; color:#a1a1aa; background:#f4f4f5; transition:all .3s; }
+.chip.on { color:#fff; background:var(--accent); }
+.chip.used { color:var(--green); background:var(--green-bg); }
+.sheet .views { position:relative; flex:1; min-height:0; }
+.sheet .views svg { position:absolute; inset:0; width:100%; height:100%; transition:opacity .4s; }
+.sheet .views svg.off { opacity:0; pointer-events:none; }
+.sheet .vseg { position:absolute; right:10px; top:8px; z-index:2; }
+.plan .ext-wall { fill:none; stroke:#71717a; stroke-width:7; }
+.plan .room { font-size:10.5px; fill:#a1a1aa; text-anchor:middle; }
+.plan .w { stroke:#e4e4e7; stroke-width:4; stroke-linecap:square; transition:stroke .35s; }
+.plan .w.on.W1 { stroke:#3b82f6; stroke-width:5; } .plan .w.on.W2 { stroke:#ef4444; stroke-width:6; } .plan .w.on.W3 { stroke:#14b8a6; stroke-width:5; }
+.plan .ceil { opacity:0; transition:opacity .5s; } .plan .ceil.on { opacity:1; }
+.plan .door { fill:none; stroke:#d4d4d8; stroke-width:1.2; } .plan .door.on { stroke:var(--accent); stroke-width:2; }
+.plan .el { fill:#14b8a6; opacity:0; transition:opacity .25s; } .plan .el.on { opacity:1; }
+.plan .rev { fill:#fff; stroke:#0d9488; stroke-width:2; opacity:0; transition:opacity .25s; } .plan .rev.on { opacity:1; }
+.plan .anschl { stroke:#f59e0b; stroke-width:2.5; stroke-dasharray:5 4; fill:none; opacity:0; transition:opacity .4s; } .plan .anschl.on { opacity:1; }
+.plan .lbl { font-size:11px; font-weight:600; opacity:0; transition:opacity .3s; } .plan .lbl.on { opacity:1; }
+.scan { position:absolute; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--accent),transparent); opacity:0; top:40px; z-index:1; }
+.scan.on { opacity:.7; animation:scan 2.2s ease-in-out infinite; }
+@keyframes scan { 0% { top:44px; } 50% { top:calc(100% - 10px); } 100% { top:44px; } }
+.ptitle { font-size:12px; font-weight:600; color:var(--muted); display:flex; align-items:center; gap:8px; }
+.ptitle span { font-weight:400; }
+.btab { border:1px solid var(--line); border-radius:12px; overflow:hidden; flex:none; }
+.btab table { width:100%; border-collapse:collapse; font-size:12.5px; }
+.btab td, .btab th { padding:5px 10px; border-bottom:1px solid var(--line2); text-align:left; white-space:nowrap; }
+.btab th { color:var(--muted); font-weight:500; font-size:11.5px; }
+.btab .r { text-align:right; font-variant-numeric:tabular-nums; }
+.btab tr.hid { display:none; }
+.btab .sw-c { width:9px; height:9px; border-radius:3px; display:inline-block; margin-right:7px; }
+.btab .arrow { color:var(--muted); }
+.plist { border:1px solid var(--line); border-radius:12px; flex:1; min-height:0; overflow:hidden; }
+.prow { display:flex; align-items:center; gap:8px; padding:4px 10px; border-bottom:1px solid var(--line2); font-size:12.5px; animation:fin .3s ease-out; }
+.prow .oz { width:38px; color:var(--muted); flex:none; font-variant-numeric:tabular-nums; }
+.prow .kt { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.prow .hk { width:96px; flex:none; }
+.prow .mg { width:80px; text-align:right; color:var(--soft); flex:none; font-variant-numeric:tabular-nums; }
+.checks { display:flex; flex-direction:column; gap:5px; }
+.check { display:flex; gap:8px; font-size:12.5px; align-items:center; color:var(--soft); animation:fin .3s ease-out; }
+.check .ok { color:var(--green); font-weight:700; } .check .fx { color:var(--amber); font-weight:700; }
+
+/* Herkunft (dezent) */
+.hk { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--soft); white-space:nowrap; }
+.hk i { width:7px; height:7px; border-radius:50%; display:inline-block; }
+
+/* LV */
+.lvinfo { display:flex; align-items:center; gap:14px; padding:10px 20px; font-size:13px; color:var(--soft); flex:none; }
+.lvinfo b { color:var(--text); font-weight:600; }
+.lvmain { flex:1; display:flex; min-height:0; }
+.lvgrid { flex:1; overflow:auto; position:relative; }
+.side { width:320px; border-left:1px solid var(--line); overflow:auto; padding:16px 18px; flex:none; display:flex; flex-direction:column; gap:10px; }
+.side h4 { margin:0; font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; }
+table.lv { width:100%; border-collapse:collapse; font-size:13px; table-layout:fixed; }
+table.lv th { position:sticky; top:0; background:#fff; z-index:2; text-align:left; font-weight:500; color:var(--muted); padding:8px 12px; border-bottom:1px solid var(--line); font-size:12px; }
+table.lv td { padding:0 12px; height:36px; border-bottom:1px solid var(--line2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+table.lv .r { text-align:right; font-variant-numeric:tabular-nums; }
+table.lv tr.grp td { font-weight:600; height:40px; padding-top:8px; color:var(--text); }
+table.lv tr.grp td:first-child { color:var(--muted); font-weight:500; }
+table.lv tr.pos { cursor:pointer; }
+table.lv tr.pos:hover td { background:#fafafa; }
+table.lv tr.pos.sel td { background:#fafafa; }
+table.lv tr.pos.hl td { animation:hl 1.6s ease-out; }
+@keyframes hl { 0%,40% { background:#ffedd5; } 100% { background:transparent; } }
+table.lv tr.chg td:first-child { box-shadow:inset 3px 0 0 #f59e0b; }
+table.lv tr.isneu td:first-child { box-shadow:inset 3px 0 0 #22c55e; }
+table.lv tr.isneu td { background:#fbfefb; }
+table.lv td.ed { cursor:text; }
+table.lv td.ed:hover { box-shadow:inset 0 0 0 1px #e4e4e7; }
+table.lv td.ed.focus { box-shadow:inset 0 0 0 1.5px var(--text); background:#fff; }
+table.lv tr.sum td { font-weight:600; height:44px; border-bottom:0; }
+table.lv tr.lt > td { white-space:normal; background:#fafafa; padding:12px 14px 14px 72px; height:auto; }
+.ltbox { display:flex; gap:28px; font-size:12.5px; line-height:1.55; }
+.ltbox .lt { flex:1.2; color:#3f3f46; }
+.ltbox .mz { flex:1; }
+.ltbox b.k { font-size:11.5px; color:var(--muted); font-weight:600; display:block; margin-bottom:3px; }
+.mz table { border-collapse:collapse; width:100%; font-size:12px; }
+.mz td { padding:2px 6px; border-bottom:1px dashed #e4e4e7; height:auto !important; white-space:nowrap; }
+.mz td.r { text-align:right; }
+.herk { margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:12px; color:var(--soft); }
+.old { text-decoration:line-through; color:#a1a1aa; margin-right:6px; font-size:12px; }
+.cell-in { width:100%; border:0; outline:0; font:inherit; text-align:right; background:transparent; padding:0; }
+.status { display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--green); font-weight:500; white-space:nowrap; }
+.banner { margin:0 20px 8px; padding:9px 14px; border-radius:10px; background:var(--amber-bg); display:none; align-items:center; gap:12px; font-size:13px; flex:none; }
+.banner.on { display:flex; }
+.pg { border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+.pr { display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--line2); cursor:pointer; font-size:13px; }
+.pr:last-child { border-bottom:0; }
+.pr:hover { background:#fafafa; }
+.pr .ok { color:var(--green); font-weight:700; width:12px; }
+.pr .n { color:var(--muted); margin-left:auto; font-size:12.5px; }
+.pr .ch { color:#a1a1aa; font-size:11px; transition:transform .2s; }
+.pr.open .ch { transform:rotate(90deg); }
+.pdet { display:none; padding:2px 12px 10px 34px; border-bottom:1px solid var(--line2); }
+.pdet.on { display:block; }
+.it { font-size:12.5px; line-height:1.45; padding:6px 0; cursor:pointer; border-radius:6px; }
+.it .h { font-weight:500; }
+.it .s { color:var(--muted); }
+.it:hover .h { color:var(--accent); }
+
+/* Fachplaner */
+.fp { flex:1; display:flex; min-height:0; background:var(--bg); }
+.fp-l { width:350px; padding:18px; display:flex; flex-direction:column; gap:10px; overflow:hidden; flex:none; }
+.fp-m { flex:1; padding:18px 22px 18px 4px; display:flex; flex-direction:column; gap:12px; min-width:0; }
+.card { background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:var(--sh); }
+.fpc { padding:12px 14px; }
+.fpc .g { font-size:11.5px; color:var(--muted); font-weight:500; }
+.fpc .n { font-weight:600; font-size:14px; display:flex; align-items:center; gap:8px; margin:1px 0 7px; }
+.fpc .n .sy { margin-left:auto; font-weight:400; font-size:11.5px; color:var(--green); display:inline-flex; gap:5px; align-items:center; }
+.fpc .d { display:flex; align-items:center; gap:8px; font-size:12.5px; padding:3px 0; }
+.fpc .d .ext { width:32px; height:18px; font-size:9px; }
+.fpc .rt { font-size:11.5px; color:var(--muted); margin-top:6px; }
+.stab { width:100%; border-collapse:collapse; font-size:13px; }
+.stab th { text-align:left; font-weight:500; color:var(--muted); font-size:12px; padding:10px 14px; border-bottom:1px solid var(--line); }
+.stab td { padding:0 14px; height:44px; border-bottom:1px solid var(--line2); white-space:nowrap; }
+.stab tr.s { cursor:pointer; } .stab tr.s:hover td { background:#fafafa; } .stab tr.s.sel td { background:#fafafa; }
+.stab .sub { color:var(--soft); font-size:12.5px; }
+.sdet { padding:14px 16px; display:none; gap:18px; animation:fin .3s ease-out; }
+.sdet.on { display:flex; }
+.sdet .msg { flex:1.2; border:1px solid var(--accent-line); border-radius:10px; padding:10px 12px; font-size:12.5px; line-height:1.5; background:#fffcfa; }
+
+/* Rerun / Senden */
+#rerun { width:940px; height:500px; margin-top:70px; }
+#senden { width:1240px; height:690px; }
+#importdlg { width:620px; margin-top:120px; }
+#einlesen { width:1150px; height:640px; margin-top:40px; }
+.mail { border:1px solid var(--line); border-radius:12px; padding:16px 18px; font-size:13px; line-height:1.55; height:100%; overflow:hidden; background:#fff; }
+.mail .mh { border-bottom:1px solid var(--line2); padding-bottom:10px; margin-bottom:10px; color:var(--soft); }
+.mail .mh b { color:var(--text); font-weight:600; }
+.att { display:inline-flex; gap:6px; align-items:center; border:1px solid var(--line); border-radius:7px; padding:4px 8px; margin:3px 6px 3px 0; font-size:12px; }
+.recips { display:flex; flex-direction:column; gap:5px; }
+.recip { display:flex; align-items:center; gap:10px; border:1px solid var(--line); border-radius:9px; padding:7px 11px; font-size:13px; }
+.recip .em { color:var(--muted); font-size:12px; }
+.recip .st { margin-left:auto; font-size:12px; color:var(--muted); }
+.recip .st.ok { color:var(--green); font-weight:500; }
+.recip.plat { background:#fafafa; }
+.cb { display:flex; align-items:center; gap:9px; font-size:13px; padding:3px 0; }
+.cb i { width:16px; height:16px; border-radius:5px; background:var(--text); color:#fff; font-style:normal; font-size:10px; display:flex; align-items:center; justify-content:center; flex:none; }
+.ilist { border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+.irow { display:flex; align-items:center; gap:10px; padding:9px 12px; border-bottom:1px solid var(--line2); font-size:13px; }
+.irow:last-child { border-bottom:0; }
+.irow .ck { width:16px; height:16px; border-radius:5px; border:1.5px solid #d4d4d8; display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff; }
+.irow.on .ck { background:var(--text); border-color:var(--text); }
+.irow .m { margin-left:auto; color:var(--muted); font-size:12px; }
+
+/* PDF einlesen */
+.pdfview { flex:1; background:#e4e4e7; border-radius:10px; padding:18px; overflow:hidden; display:flex; justify-content:center; }
+.page { width:470px; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.12); padding:26px 28px; font-family:Georgia, 'Times New Roman', serif; font-size:10.5px; color:#333; position:relative; transform:rotate(-.4deg); }
+.page h5 { margin:0 0 2px; font-size:14px; }
+.page table { width:100%; border-collapse:collapse; margin-top:12px; }
+.page td { padding:2.4px 4px; border-bottom:1px solid #eee; white-space:nowrap; }
+.page td.r { text-align:right; }
+.scanbox { position:absolute; left:22px; right:22px; height:20px; border:2px solid var(--accent); border-radius:4px; background:rgba(232,98,44,.08); transition:top .18s; display:none; }
+.ext-r { flex:1; display:flex; flex-direction:column; gap:10px; min-width:0; }
+.etab { width:100%; border-collapse:collapse; font-size:12.5px; }
+.etab td, .etab th { padding:2.5px 8px; border-bottom:1px solid var(--line2); text-align:left; white-space:nowrap; }
+.etab th { color:var(--muted); font-weight:500; font-size:11.5px; }
+.etab .r { text-align:right; font-variant-numeric:tabular-nums; }
+.etab tr.leer td { color:#d4d4d8; }
+.etab tr.neu td { animation:fin .2s ease-out; }
+
+/* Portal */
+#portal { inset:0; z-index:6; background:var(--bg); }
+.ptop { height:60px; background:#18181b; color:#fff; display:flex; align-items:center; padding:0 28px; gap:14px; flex:none; }
+.ptop .logo { margin:0; width:28px; height:28px; font-size:13px; }
+.pbody { padding:22px 28px; display:flex; gap:20px; flex:1; min-height:0; }
+.pcardw { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 20px; }
+.pin { width:110px; height:28px; border:1px solid var(--line); border-radius:6px; text-align:right; padding:0 8px; font:inherit; font-variant-numeric:tabular-nums; }
+
+/* Preisspiegel */
+.inbox { display:flex; gap:8px; padding:12px 20px 0; flex:none; }
+.inb { flex:1; border:1px solid var(--line); border-radius:10px; padding:8px 11px; font-size:12px; opacity:.35; transition:opacity .4s, border-color .4s; min-width:0; }
+.inb.on { opacity:1; border-color:var(--green-line); background:#fbfefb; }
+.inb.off.on { border-color:var(--line); background:#fafafa; }
+.inb b { display:block; font-size:13px; font-weight:600; margin-bottom:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.inb .muted { white-space:nowrap; }
+table.ps td { height:28px; }
+table.ps td.best { color:var(--green); font-weight:600; background:var(--green-bg); }
+table.ps td.ausr { color:var(--red); font-weight:600; background:var(--red-bg); }
+table.ps td.leer { color:var(--amber); font-style:italic; }
+table.ps th.b { text-align:right; }
+table.ps td.dim { color:#a1a1aa; }
+.rank1 { color:var(--green); }
+
+/* Bieter & Rückfragen */
+.bcol { width:330px; border-right:1px solid var(--line); overflow:hidden; padding:16px; display:flex; flex-direction:column; gap:8px; flex:none; }
+.bstats { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+.bstat { background:#f7f7f8; border-radius:9px; padding:6px 9px; font-size:11px; color:var(--muted); line-height:1.25; }
+.bstat b { display:block; font-size:18px; color:var(--text); font-weight:600; font-variant-numeric:tabular-nums; }
+.frist { font-size:12px; color:var(--soft); padding:2px 0 4px; }
+.brow { border:1px solid var(--line); border-radius:10px; padding:8px 11px; cursor:pointer; transition:border-color .2s, background .3s; background:#fff; }
+.brow:hover { border-color:#d4d4d8; }
+.brow.sel { border-color:var(--text); }
+.brow .n { display:flex; align-items:center; gap:8px; font-weight:600; font-size:13.5px; }
+.brow .n .tag { margin-left:auto; }
+.brow .l { font-size:12px; color:var(--muted); margin-top:2px; }
+.brow .cs { display:flex; gap:5px; margin-top:6px; flex-wrap:wrap; }
+.brow .cs:empty { display:none; }
+.brow.flash { animation:bfl 1.6s ease-out; }
+@keyframes bfl { 0%,45% { background:var(--green-bg); border-color:var(--green-line); } }
+.bmid { flex:1; min-width:0; display:flex; flex-direction:column; padding:16px 20px; gap:10px; overflow:hidden; }
+.mlist { border:1px solid var(--line); border-radius:12px; overflow:hidden; flex:none; }
+.mlist .leer { padding:16px; color:var(--muted); font-size:13px; }
+.mrow { display:flex; align-items:center; gap:10px; padding:0 12px; height:34px; border-bottom:1px solid var(--line2); font-size:13px; cursor:pointer; }
+.mrow.neu { animation:fin .35s ease-out; }
+.mrow:last-child { border-bottom:0; }
+.mrow:hover, .mrow.sel { background:#fafafa; }
+.mrow.sel { box-shadow:inset 3px 0 0 var(--text); }
+.mrow .who { width:150px; font-weight:600; flex:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mrow .sub { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--soft); }
+.mrow .dt { color:var(--muted); font-size:12px; width:112px; text-align:right; flex:none; white-space:nowrap; }
+.mrow .ms { flex:none; text-align:right; font-size:12px; }
+.inmail { border:1px solid var(--line); border-radius:12px; padding:10px 14px; font-size:13px; line-height:1.5; background:#fafafa; flex:none; }
+.inmail .mh { color:var(--muted); font-size:12px; margin-bottom:3px; }
+.inmail .mh b { color:var(--text); font-weight:600; }
+.draft { border:1px solid var(--accent-line); border-radius:12px; background:#fff; display:flex; flex-direction:column; flex:none; }
+.draft.sent { border-color:var(--green-line); }
+.draft-h { display:flex; align-items:center; gap:10px; padding:8px 14px; border-bottom:1px solid var(--line2); font-size:12.5px; color:var(--soft); }
+.draft-h .ki { color:var(--accent); font-weight:600; white-space:nowrap; }
+.draft.sent .draft-h .ki { color:var(--green); }
+.draft-b { padding:10px 14px; font-size:13px; line-height:1.5; flex:1; overflow:hidden; outline:0; }
+.draft-b.edit { background:#fffcfa; box-shadow:inset 0 0 0 2px var(--accent-line); }
+.draft-b .zit { padding:0 0 0 10px; border-left:3px solid #e4e4e7; color:var(--soft); margin:4px 0 8px; font-style:italic; }
+.draft-b ins { text-decoration:none; background:#fef3c7; }
+.ref { display:inline-block; font-size:10.5px; line-height:15px; background:var(--blue-bg); color:var(--blue); border-radius:4px; padding:0 4px; margin-left:3px; vertical-align:1px; user-select:none; }
+.draft-f { display:flex; align-items:center; gap:8px; padding:9px 14px; border-top:1px solid var(--line2); }
+.hitl { white-space:nowrap; font-size:12px; color:var(--amber); background:var(--amber-bg); padding:3px 10px; border-radius:12px; }
+.bside { width:330px; border-left:1px solid var(--line); overflow:hidden; padding:16px; flex:none; display:flex; flex-direction:column; gap:12px; }
+.bside h4 { margin:0 0 6px; font-size:13.5px; font-weight:600; display:flex; align-items:center; gap:8px; }
+.ctx { font-size:12.5px; line-height:1.45; padding:7px 10px; border-radius:9px; border:1px solid var(--line); margin-bottom:6px; }
+.ctx .h { font-weight:500; display:flex; gap:6px; align-items:center; }
+.ctx .s { color:var(--muted); }
+.ctx.ok { border-color:var(--green-line); background:#fbfefb; }
+.ctx.ok .h::before { content:'✓'; color:var(--green); font-weight:700; }
+.bside.neu .ctx { animation:fin .35s ease-out backwards; }
+.tl { position:relative; padding-left:16px; margin-top:4px; }
+.tl::before { content:''; position:absolute; left:4px; top:12px; bottom:12px; width:1px; background:var(--line); }
+.tl .e { position:relative; padding:6px 0; font-size:13px; display:flex; gap:10px; align-items:center; }
+.tl .e::before { content:''; position:absolute; left:-16px; top:12px; width:9px; height:9px; border-radius:50%; background:#d4d4d8; }
+.tl .e.hi::before { background:var(--accent); } .tl .e.ok::before { background:#22c55e; }
+.tl .e .d { color:var(--muted); font-size:12px; width:92px; flex:none; font-variant-numeric:tabular-nums; }
+</style>
+</head>
+<body>
+
+<!-- ============ Leiste ============ -->
+<nav class="rail">
+  <div class="logo">a</div>
+  <button class="ri on" id="r-home" title="Projekte"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></button>
+  <button class="ri" id="r-lv" title="Leistungsverzeichnisse"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg></button>
+  <button class="ri" id="r-fp" title="Fachplaner und Schnittstellen"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
+  <button class="ri" id="r-tb" title="Büro-Regelwerk und Textdatenbank"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></button>
+  <span class="sp"></span>
+  <button class="ri lock" id="r-ds" title="Datenschutz"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></button>
+</nav>
+<div class="pop" id="pop-ds">
+  <h4><span class="tag t-ok">✓</span> Datenschutz und Sicherheit</h4>
+  <div class="pi"><span class="ok">✓</span><div><b>Server in Deutschland</b><span class="muted">DSGVO-konform, Auftragsverarbeitungsvertrag inklusive</span></div></div>
+  <div class="pi"><span class="ok">✓</span><div><b>Kein Training mit Ihren Daten</b><span class="muted">Projektdaten werden nicht zum Training von KI-Modellen genutzt</span></div></div>
+  <div class="pi"><span class="ok">✓</span><div><b>Rechte je Projekt</b><span class="muted">Fachplaner und Bieter sehen nur, was für sie freigegeben ist</span></div></div>
+  <div class="pi"><span class="ok">✓</span><div><b>Verschlüsselt und protokolliert</b><span class="muted">Übertragung und Speicherung verschlüsselt, jeder Zugriff nachvollziehbar</span></div></div>
+</div>
+<div class="pop" id="pop-tb" style="bottom:auto;top:150px">
+  <h4>Büro-Regelwerk und Textdatenbank</h4>
+  <div class="muted" style="font-size:12.5px;margin-bottom:8px">142 Standardtexte · 18 Regeln · gepflegt vom Büro, gilt für jedes neue LV</div>
+  <div class="pi"><span class="ok">§</span><div><b>Aufenthaltsräume immer Q3</b><span class="muted">Gruppen-, Schlaf- und Mehrzweckräume</span></div></div>
+  <div class="pi"><span class="ok">§</span><div><b>Keine Produktnamen</b><span class="muted">Nur Leitfabrikat mit „oder gleichwertig“</span></div></div>
+  <div class="pi"><span class="ok">§</span><div><b>Stundenlohn höchstens 2 % der LV-Summe</b><span class="muted">Sonst Mengen begrenzen</span></div></div>
+  <div class="pi"><span class="ok">¶</span><div><b>Vorbemerkungen Trockenbau</b><span class="muted">Standardtext TB-039-001, Stand 2026</span></div></div>
+</div>
+
+<!-- ============ Projektübersicht ============ -->
+<div class="screen on" id="projekte">
+  <div class="top"><span class="crumb"><b>Projekte</b></span><span class="sp"></span><button class="btn ghost">Importieren</button><button class="btn primary">＋ Neues Projekt</button></div>
+  <div class="projekte">
+    <div class="pcard">
+      <div class="pcard-h"><b>Kita Sonnenhof</b><span class="muted" style="font-size:13px">Neubau · Kostenberechnung · geändert 27.10.2026</span><span class="sp"></span>
+        <button class="btn">＋ LV</button><button class="btn ki" id="btn-ki">✦ LV mit KI erstellen</button></div>
+      <div class="conn"><span><i class="dot" style="background:#22c55e"></i>ORCA AVA verbunden</span><span><i class="dot" style="background:#22c55e"></i>Vergabeplattform verbunden</span><span><i class="dot" style="background:#22c55e"></i>4 Fachplaner synchronisiert</span><span><i class="dot" style="background:#22c55e"></i>IFC-Modell Index B</span></div>
+      <table class="ptable">
+        <tr><th>Kostenermittlung</th><th>Stufe</th><th class="r">Gesamt netto</th><th class="r">€ je m² BGF</th></tr>
+        <tr><td>Kostenrahmen</td><td>LPH 1</td><td class="r">4.120.000,00 €</td><td class="r">4.949,12 €</td></tr>
+        <tr><td>Kostenschätzung</td><td>LPH 2</td><td class="r">4.107.650,00 €</td><td class="r">4.934,28 €</td></tr>
+        <tr><td>Kostenberechnung</td><td>LPH 3</td><td class="r">4.073.540,00 €</td><td class="r">4.893,56 €</td></tr>
+      </table>
+      <table class="ptable">
+        <tr><th>Leistungsverzeichnis</th><th>Status</th><th class="r">Summe netto</th><th></th></tr>
+        <tr><td>026 Fenster, Außentüren</td><td><span class="tag t-ok">Zuschlag erteilt</span></td><td class="r">378.294,00 €</td><td></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LV ============ -->
+<div class="screen" id="lv">
+  <div class="top">
+    <span class="crumb">Kita Sonnenhof&nbsp; / &nbsp;<b>039 Trockenbau</b></span>
+    <div class="seg" id="lv-tabs" style="margin-left:10px"><button class="on" data-t="lv">Leistungsverzeichnis</button><button data-t="bi">Bieter &amp; Rückfragen<span class="badge" id="bi-badge" style="display:none"></span></button><button data-t="ps">Preisspiegel</button></div>
+    <span class="sp"></span><span id="lv-status"></span>
+    <button class="btn ghost" id="btn-rerun">↻ Unterlagen aktualisieren</button>
+    <button class="btn primary" id="btn-senden">Senden</button>
+  </div>
+  <div class="lvinfo" id="lvinfo"></div>
+  <div class="banner" id="banner"></div>
+  <div class="lvmain" id="lvmain">
+    <div class="lvgrid" id="lvgrid"></div>
+    <div class="side" id="side"></div>
+  </div>
+  <div class="lvmain" id="psmain" style="display:none;flex-direction:column">
+    <div class="inbox" id="inbox"></div>
+    <div style="display:flex;flex:1;min-height:0;margin-top:10px">
+      <div class="lvgrid" id="psgrid"></div>
+      <div class="side" id="psside" style="width:300px"></div>
+    </div>
+  </div>
+  <div class="lvmain" id="bimain" style="display:none">
+    <div class="bcol" id="bcol"></div>
+    <div class="bmid" id="bmid"></div>
+    <div class="bside" id="bside"></div>
+  </div>
+</div>
+
+<!-- ============ Fachplaner ============ -->
+<div class="screen" id="fachplaner">
+  <div class="top"><span class="crumb">Kita Sonnenhof&nbsp; / &nbsp;<b>Fachplaner und Schnittstellen</b></span><span class="sp"></span><button class="btn">＋ Fachplaner einladen</button></div>
+  <div class="fp">
+    <div class="fp-l" id="fp-l"></div>
+    <div class="fp-m">
+      <div class="h-sec" style="font-size:13px;color:var(--text)">✦ Schnittstellenprüfung über alle LVs <span class="muted" style="font-weight:400" id="fp-sum"></span></div>
+      <div class="card" style="overflow:hidden"><table class="stab" id="stab"></table><div class="sdet" id="sdet"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Bieterportal ============ -->
+<div class="screen" id="portal">
+  <div class="ptop"><span class="logo">a</span><b>Bieterportal</b><span style="opacity:.5">|</span><span style="opacity:.85">Kita Sonnenhof · 039 Trockenbau</span><span class="sp"></span>
+    <span style="opacity:.7;font-size:13px">Angebotsfrist 17.11.2026, 12:00</span><span style="background:#27272a;padding:5px 12px;border-radius:14px;font-size:13px">Bauer Akustik GmbH</span><button class="btn" id="portal-zurueck" style="display:none;margin-left:8px">← Zurück</button></div>
+  <div class="pbody">
+    <div class="pcardw" style="flex:1;display:flex;flex-direction:column;min-height:0">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><b style="font-size:16px">Angebot abgeben</b><span class="muted" style="font-size:12.5px">Preise eintragen oder Kalkulation hochladen. Auch über die Vergabeplattform möglich, beides wird synchronisiert.</span><span class="sp"></span>
+        <button class="btn" id="btn-x84">⇧ GAEB X84 oder PDF hochladen</button></div>
+      <div style="overflow:auto;flex:1"><table class="lv" id="portal-tab"></table></div>
+      <div style="display:flex;align-items:center;gap:14px;padding-top:12px;border-top:1px solid var(--line);margin-top:8px">
+        <span class="muted">Angebotssumme netto</span><b style="font-size:18px" id="portal-sum">0,00 €</b><span class="sp"></span>
+        <span class="muted" style="font-size:12.5px" id="portal-fill"></span><span class="muted" style="font-size:12.5px">🔒 Bleibt bis zum Eröffnungstermin verschlossen</span>
+        <button class="btn primary big" id="btn-abgeben">Angebot verschlüsselt abgeben</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Wizard ============ -->
+<div class="backdrop" id="bd-wizard"><div class="modal" id="wizard">
+  <div class="modal-h"><h3>✦ LV mit KI erstellen</h3>
+    <div class="steps" id="steps"><div class="step on"><i>1</i>Unterlagen</div><div class="step"><i>2</i>Wissen &amp; Regeln</div><div class="step"><i>3</i>Gewerke</div><div class="step"><i>4</i>Rückfragen</div><div class="step"><i>5</i>Erstellen</div></div></div>
+  <div class="modal-b">
+    <!-- 1 Unterlagen -->
+    <div class="pane on" id="p1" style="flex-direction:column;gap:14px">
+      <div style="display:flex;gap:14px">
+        <div class="field" style="width:280px"><label>Name des LV</label><div class="input">039 Trockenbau</div></div>
+        <div class="field" style="width:320px"><label>Gewerk</label><div class="input">Trockenbauarbeiten · ATV DIN 18340</div></div>
+        <div class="field" style="width:320px"><label>Auftraggeber</label><div class="input">Gemeinde · öffentlich, VOB/A</div></div>
+      </div>
+      <div class="cols" style="flex:1;min-height:0">
+        <div class="drop"><h4>Pläne und Modell</h4>
+          <div class="hint">IFC-Modell, Grundrisse, Schnitte, Türliste, Brandschutz, Baubeschreibung</div>
+          <div class="acts"><label class="btn sm">⇧ Dateien hinzufügen<input type="file" id="in-docs" multiple hidden></label></div>
+          <div class="files" id="files-docs"></div></div>
+        <div class="drop"><h4>Von den Fachplanern <span class="tag t-ok" id="fach-st" style="display:none">⇄ synchronisiert</span></h4>
+          <div class="hint">Kommt automatisch aus dem Fachplaner-Bereich, immer der neueste Planstand</div>
+          <div class="files" id="files-fach"></div></div>
+        <div class="drop"><h4>Alte LVs des Büros</h4>
+          <div class="hint">Direkt aus Ihrer AVA-Software oder als GAEB / PDF, mit Texten und Preisen</div>
+          <div class="acts"><button class="btn sm" id="btn-import">⇄ Aus ORCA AVA / California</button><label class="btn sm">⇧ GAEB oder PDF<input type="file" id="in-old" multiple hidden></label></div>
+          <div class="files" id="files-old"></div></div>
+      </div>
+    </div>
+    <!-- 2 Wissen & Regeln -->
+    <div class="pane" id="p2">
+      <div class="cols">
+        <div class="col"><div class="ptitle">WISSENSQUELLEN</div>
+          <div class="src neu" id="src-regel"><div class="ico">§</div><div><b>Büro-Regelwerk und Textdatenbank</b><p>142 Standardtexte und 18 Regeln Ihres Büros. Gilt automatisch für jedes LV.</p>
+            <div class="rules"><div>Aufenthaltsräume immer Q3</div><div>Keine Produktnamen, nur „oder gleichwertig“</div><div>Stundenlohn höchstens 2 % der LV-Summe</div></div></div><div class="sw"></div></div>
+          <div class="src"><div class="ico">▤</div><div><b>Text- und Bauteildatenbanken</b><p>Normgerechte Langtexte, Bauteilaufbauten mit Prüfzeugnissen, Zulagen und Besondere Leistungen</p></div><div class="sw"></div></div>
+          <div class="src"><div class="ico">★</div><div><b>Erfahrung aus abgeschlossenen Projekten</b><p>Häufige Nachträge je Gewerk, Preisniveau, Fallstricke in Vorbemerkungen</p></div><div class="sw"></div></div>
+          <div class="src"><div class="ico">⇄</div><div><b>Ihre Büro-LVs</b><p>3 LVs aus ORCA AVA mit Preisen aus der Vergabe</p></div><div class="sw"></div></div>
+        </div>
+        <div class="col"><div class="ptitle">AUTOMATISCHE PRÜFUNGEN</div>
+          <div class="src" id="src-vob"><div class="ico">§</div><div><b>VOB/C · ATV DIN 18299 und 18340</b><p>Abschnitt 0 vollständig, keine Nebenleistungen, Besondere Leistungen als eigene Positionen, Mengen nach Abschnitt 5</p></div><div class="sw"></div></div>
+          <div class="src"><div class="ico">⚖</div><div><b>Vergaberecht · VOB/A</b><p>Eindeutig und produktneutral (§ 7), Fachlose (§ 5), Gleichbehandlung bei Rückfragen (§ 12a)</p></div><div class="sw"></div></div>
+          <div class="src"><div class="ico">⚠</div><div><b>Lücken und Schnittstellen</b><p>Was gebaut werden muss, aber in keinem LV steht, wird später zum Nachtrag. Abgleich auch mit den LVs der Fachplaner.</p></div><div class="sw"></div></div>
+          <div class="src"><div class="ico">§</div><div><b>Büro-Regelwerk</b><p>Jede Position gegen die 18 Regeln Ihres Büros</p></div><div class="sw"></div></div>
+        </div>
+      </div>
+    </div>
+    <!-- 3 Gewerke -->
+    <div class="pane" id="p3">
+      <div class="gw">
+        <div class="gw-3d"><div class="ptitle" style="padding:12px 14px 0">IFC-MODELL <span>nach Gewerken</span></div><svg id="m3-gw" viewBox="-440 -300 880 560" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="legend"><span><i class="dot" style="background:#3b82f6"></i>Trockenbau</span><span><i class="dot" style="background:#b45309"></i>Tischler</span><span><i class="dot" style="background:#84cc16"></i>Bodenbelag</span><span><i class="dot" style="background:#d4d4d8"></i>Rohbau (vergeben)</span></div></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px;min-width:0">
+          <div style="font-size:13.5px;color:var(--soft)">Aus dem Modell und den Fachplaner-Unterlagen schlägt der Assistent <b style="color:var(--text)">6 Vergabeeinheiten</b> für den Ausbau vor.</div>
+          <div style="border:1px solid var(--line);border-radius:12px;overflow:hidden"><table class="gtab" id="gtab"></table></div>
+          <div style="display:flex;gap:12px">
+            <div class="dec" style="flex:1.1"><div class="t">Akustikdecken als eigenes Los?</div><div class="w">520 m² in den Gruppenräumen. Gleicher Handwerkszweig wie Trockenbau, ein eigenes Los bringt eine Schnittstelle mehr.</div>
+              <div class="opts" id="dec-opts"><button class="opt on">Im Trockenbau<span class="rec">Vorschlag</span></button><button class="opt">Eigenes Los</button></div></div>
+            <div class="dec" style="flex:1"><div class="t">Schnittstellen</div><div class="lines" style="margin-top:6px">
+              <div><span class="ok">✓</span>Q3-Spachtelung → 039, Anstrich → 034</div><div><span class="ok">✓</span>Türöffnung → 039, Zarge und Blatt → 027</div><div><span class="ok">✓</span>Dosenausschnitt → 039, Dose → 053</div></div></div>
+          </div>
+          <div class="lines"><div><span class="ok">✓</span>Fachlose nach § 5 Abs. 2 VOB/A: jedes Fachgebiet getrennt vergeben</div></div>
+        </div>
+      </div>
+    </div>
+    <!-- 4 Rückfragen -->
+    <div class="pane" id="p4" style="flex-direction:column;gap:10px">
+      <div style="font-size:13.5px;color:var(--soft)">Beim Lesen sind <b style="color:var(--text)">3 Punkte</b> aufgefallen, die nicht eindeutig sind. Ihre Antworten fließen direkt ins LV.</div>
+      <div class="cols" style="flex-wrap:wrap" id="fragen"></div>
+    </div>
+    <!-- 5 Erstellen -->
+    <div class="pane" id="p5">
+      <div class="gen">
+        <div class="gen-l">
+          <div class="phase" id="phases">
+            <div class="ph"><b>1 Mengen aus dem Modell</b>Bauteile erkennen, messen</div>
+            <div class="ph"><b>2 Positionen</b>aus Bauteilen</div>
+            <div class="ph"><b>3 Lose Positionen</b>Fachplanung, Regeln</div>
+            <div class="ph"><b>4 Prüfen</b>VOB/C, Vergabe, Büro</div>
+          </div>
+          <div class="sheet">
+            <div class="sheet-h" id="chips"></div>
+            <div class="views"><div class="seg vseg" id="vseg"><button class="on" data-v="3d">3D-Modell</button><button data-v="2d">Grundriss</button></div>
+              <div class="scan" id="scan"></div>
+              <svg id="m3-gen" viewBox="-470 -235 940 430" preserveAspectRatio="xMidYMid meet"></svg>
+              <svg class="plan off" id="plan" viewBox="-20 -34 860 430" preserveAspectRatio="xMidYMid meet"></svg></div>
+          </div>
+        </div>
+        <div class="gen-r">
+          <div class="ptitle">BAUTEILE UND MENGEN <span id="bt-src">aus IFC-Modell, Schnitten, Türliste</span></div>
+          <div class="btab"><table id="btab"></table></div>
+          <div class="ptitle">POSITIONEN <span id="pos-count"></span></div>
+          <div class="plist"><div id="plist"></div></div>
+          <div class="checks" id="checks"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-f"><span class="muted" style="margin-right:auto;font-size:12.5px" id="wiz-hint"></span>
+    <button class="btn ghost" id="wiz-back">Zurück</button><button class="btn primary" id="wiz-next">Weiter</button></div>
+</div></div>
+
+<!-- ============ Import aus AVA-Software ============ -->
+<div class="backdrop" id="bd-import" style="z-index:20"><div class="modal" id="importdlg">
+  <div class="modal-h"><h3>LVs aus AVA-Software importieren</h3></div>
+  <div class="modal-b" style="display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;gap:12px"><div class="seg" id="ava-seg"><button class="on">ORCA AVA</button><button>California.pro</button></div><span class="tag t-ok">● verbunden</span></div>
+    <div class="ilist" id="ilist"></div>
+    <div class="muted" style="font-size:12.5px">Übernommen werden Langtexte, Gliederung, Vorbemerkungen und die Preise aus der Vergabe.</div>
+  </div>
+  <div class="modal-f"><button class="btn ghost" id="import-cancel">Abbrechen</button><button class="btn primary" id="import-go">3 LVs importieren</button></div>
+</div></div>
+
+<!-- ============ Rerun ============ -->
+<div class="backdrop" id="bd-rerun"><div class="modal" id="rerun">
+  <div class="modal-h"><h3>↻ Neue Planstände</h3></div>
+  <div class="modal-b" style="display:flex;gap:16px">
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;min-width:0">
+      <div style="font-size:13px;color:var(--soft)">Seit dem letzten Stand sind neue Unterlagen eingegangen, aus dem Modell und über den Fachplaner-Sync. Der Assistent passt nur die betroffenen Positionen an. <b style="color:var(--text)">Ihre eigenen Änderungen bleiben erhalten.</b></div>
+      <div class="files" id="files-new"></div>
+    </div>
+    <div style="width:400px;border:1px solid var(--line);border-radius:12px;background:#fcfcfc;display:flex;flex-direction:column"><div class="ptitle" style="padding:10px 12px 0">ÄNDERUNG IM MODELL <span>Index B → C</span></div><svg id="m3-rerun" viewBox="-470 -235 940 430" style="flex:1;width:100%"></svg>
+      <div class="legend"><span><i class="dot" style="background:#22c55e"></i>neue Trennwand</span><span><i class="dot" style="background:#8b5cf6"></i>jetzt EI 90</span></div></div>
+  </div>
+  <div class="modal-f"><button class="btn ghost" id="rerun-cancel">Abbrechen</button><button class="btn primary" id="rerun-go" disabled>LV anpassen</button></div>
+</div></div>
+
+<!-- ============ Senden ============ -->
+<div class="backdrop" id="bd-senden"><div class="modal" id="senden">
+  <div class="modal-h"><h3>LV veröffentlichen und an Bieter senden</h3></div>
+  <div class="modal-b" style="display:flex;gap:20px">
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px;min-width:0">
+      <div class="field"><label>Verteiler</label><div class="input">Trockenbau · Raum München (6 Firmen)</div></div>
+      <div class="recips" id="recips"></div>
+      <div style="display:flex;gap:28px">
+        <div><div class="ptitle" style="margin-bottom:4px">ANHÄNGE</div>
+          <div class="cb"><i>✓</i> GAEB DA XML 3.3 (X83)</div><div class="cb"><i>✓</i> LV als PDF</div><div class="cb"><i>✓</i> Pläne und IFC-Modell</div></div>
+        <div><div class="ptitle" style="margin-bottom:4px">ANGEBOTE ZURÜCK</div>
+          <div class="cb"><i>✓</i> Bieterportal oder Vergabeplattform</div><div class="cb"><i>✓</i> als GAEB X84, PDF oder direkt eingetragen</div><div class="cb"><i>✓</i> verschlüsselt bis 17.11.2026, 12:00</div></div>
+      </div>
+    </div>
+    <div style="flex:1.05;min-width:0">
+      <div class="mail">
+        <div class="mh"><div>An: <b>Verteiler Trockenbau</b> (einzeln, Bcc) und Vergabeplattform</div>
+          <div>Betreff: <b>Angebotsaufforderung Kita Sonnenhof · 039 Trockenbauarbeiten</b></div>
+          <div style="margin-top:6px"><span class="att"><span class="ext x83" style="width:28px;height:17px;font-size:9px">X83</span>039 Trockenbau.x83</span><span class="att"><span class="ext pdf" style="width:28px;height:17px;font-size:9px">PDF</span>039 Trockenbau.pdf</span><span class="att"><span class="ext ifc" style="width:28px;height:17px;font-size:9px">IFC</span>Modell und Pläne</span></div></div>
+        Sehr geehrte Damen und Herren,<br><br>
+        für das Bauvorhaben <b>Kita Sonnenhof</b> bitten wir um Ihr Angebot für die <b>Trockenbauarbeiten</b> (<span id="mail-n">19</span> Positionen).<br><br>
+        <b>So geben Sie Ihr Angebot ab:</b><br>
+        Laden Sie Ihre Kalkulation als GAEB X84 oder PDF hoch oder tragen Sie die Preise direkt ein, im Bieterportal oder auf der Vergabeplattform. Beide Wege sind gleichwertig und werden synchronisiert. Ihr Angebot bleibt bis zum Eröffnungstermin verschlossen.<br>
+        <span style="color:var(--blue);text-decoration:underline;cursor:pointer" id="mail-link">bieterportal.ava/kita-sonnenhof/039</span><br><br>
+        Angebotsfrist und Eröffnung: <b>17.11.2026, 12:00 Uhr</b><br><br>
+        Mit freundlichen Grüßen<br>Architekturbüro Sonnleitner
+      </div>
+    </div>
+  </div>
+  <div class="modal-f"><button class="btn ghost" id="senden-cancel">Abbrechen</button><button class="btn primary" id="senden-go">Veröffentlichen und senden</button></div>
+</div></div>
+
+<!-- ============ Angebot einlesen ============ -->
+<div class="backdrop" id="bd-einlesen"><div class="modal" id="einlesen">
+  <div class="modal-h"><h3>✦ Angebot einlesen</h3><span class="muted" id="ein-titel"></span></div>
+  <div class="modal-b" style="display:flex;gap:18px">
+    <div class="pdfview"><div class="page" id="ein-page"></div></div>
+    <div class="ext-r"><div class="ptitle">ERKANNT UND DEN POSITIONEN ZUGEORDNET</div>
+      <div style="border:1px solid var(--line);border-radius:12px;overflow:hidden"><table class="etab" id="ein-tab"></table></div>
+      <div class="lines" id="ein-check"></div></div>
+  </div>
+  <div class="modal-f"><button class="btn primary" id="ein-go" disabled>In den Preisspiegel übernehmen</button></div>
+</div></div>
+
+<script>
+// Ohne „#video“ (Aufnahmeskript) läuft der Prototyp im Handmodus: Uploads ohne echte Dateien, Abläufe automatisch.
+const VIDEO = location.hash === '#video';
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+// Im Video läuft alles etwas schneller ab, damit das Video kurz bleibt
+const TEMPO = VIDEO ? 0.55 : 1;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms * TEMPO));
+const eur = (n) => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+const num = (n) => n.toLocaleString('de-DE', { maximumFractionDigits: 2 });
+const parse = (s) => Number(String(s).replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.'));
+const tag = (cls, txt) => `<span class="tag ${cls}">${txt}</span>`;
+
+// ---------- Daten ----------
+const DOCS = {
+  'Kita Sonnenhof Architektur Index B.ifc': 'IFC 4 · 412 Bauteile, 23 Räume',
+  'A-201 Grundriss EG Index B.pdf': '14 Räume, 4 Wandtypen',
+  'A-301 Schnitte.pdf': 'Raumhöhen 2,75–4,10 m',
+  'A-501 Türliste.xlsx': '34 Innentüren',
+  'Brandschutzkonzept Rev 1.pdf': 'Flurwände EI 30',
+  'Statik Positionsplan Decke.pdf': 'Durchbiegung bis 15 mm',
+  'Baubeschreibung Kita Sonnenhof.docx': 'Oberflächen, Akustik',
+};
+const FACHDOCS = [
+  ['E-201 Elektro EG Index A.pdf', 'Ing.-Büro Lechner', '64 Dosen, 96 Leuchten'],
+  ['LV 053 Niederspannung.x83', 'Ing.-Büro Lechner', '212 Positionen'],
+  ['L-201 Lüftung EG.pdf', 'TGA-Plan GmbH', '18 Revisionsöffnungen'],
+  ['S-201 Sanitär EG.dwg', 'TGA-Plan GmbH', '26 Wandlasten'],
+  ['LV 050 Blitzschutz.pdf', 'Planungsbüro Erdmann', '38 Positionen gelesen'],
+];
+const OLD = [
+  ['LV Kita Am Park 2023 · Trockenbau', 'orca', '42 Positionen, mit Preisen'],
+  ['LV Grundschule Nord 2022 · Trockenbau', 'orca', '57 Positionen, mit Preisen'],
+  ['LV Wohnanlage Isarauen 2024 · Ausbau', 'cal', '38 Positionen, mit Preisen'],
+];
+const NEWDOCS = [
+  ['Architektur Index C.ifc', 'IFC-Modell', 'neue Trennwand Gruppenraum 3, 1 Tür mehr'],
+  ['E-201 Elektro EG Index B.pdf', 'Fachplaner-Sync', '7 Dosen mehr'],
+  ['Brandschutzkonzept Rev 2.pdf', 'Brandschutz', 'Technikraum jetzt EI 90'],
+];
+
+// Bauteile aus dem Modell (Phase 1)
+const BAUTEILE = [
+  { id: 'W1', name: 'Ständerwand CW 75, 2× GKB', m: 412.5, e: 'm²', c: '#3b82f6', from: 'IFC, A-301', pos: '02.01' },
+  { id: 'W2', name: 'Flurwand EI 30, 2× GKF', m: 186.2, e: 'm²', c: '#ef4444', from: 'IFC, Brandschutz', pos: '02.02' },
+  { id: 'W3', name: 'Vorsatzschale Installation', m: 58.4, e: 'm²', c: '#14b8a6', from: 'IFC, S-201', pos: '02.03' },
+  { id: 'H', name: 'Wandhöhe über 3,00 m', m: 74.8, e: 'm²', c: '#d97706', from: 'IFC, Schnitt B-B', pos: '02.04' },
+  { id: 'T', name: 'Türöffnungen', m: 34, e: 'St', c: '#e8622c', from: 'IFC, Türliste', pos: '02.05' },
+  { id: 'A', name: 'Deckenanschluss gleitend', m: 296, e: 'm', c: '#f59e0b', from: 'IFC, Statik', pos: '02.06' },
+  { id: 'D1', name: 'Akustikdecke Gruppenräume', m: 520, e: 'm²', c: '#93c5fd', from: 'IFC, Baubeschr.', pos: '03.01' },
+  { id: 'D2', name: 'Unterdecke Flur EI 30', m: 148, e: 'm²', c: '#fca5a5', from: 'IFC, Brandschutz', pos: '03.02' },
+];
+
+// Positionen: src = Herkunft (erste = Hauptquelle), lk = Lücke geschlossen, mz = Mengenermittlung, zg = gezählt/geschätzt
+const POS = [
+  { g: '01', t: 'Allgemeines' },
+  { oz: '01.01', kt: 'Baustelleneinrichtung Trockenbau', m: 1, e: 'psch', ep: 2400, src: ['text', 'erfahrung'], h: 'Standardtext TB-039-001 aus Ihrer Textdatenbank · in 94 % vergleichbarer LVs', lt: 'Baustelleneinrichtung für die Trockenbauarbeiten einrichten, vorhalten und räumen, einschließlich Lager- und Arbeitsflächen nach Angabe der Bauleitung.' },
+  { oz: '01.02', kt: 'Montageplanung, Werkstatt- und Revisionsunterlagen', m: 1, e: 'psch', ep: 1800, src: ['text', 'buero'], h: 'Standardtext TB-039-004 · in allen 3 Büro-LVs als eigene Position', lt: 'Montageplanung mit Achs- und Anschlussplänen, Abstimmung mit TGA; Revisionsunterlagen und Prüfzeugnisse der Brandschutzbauteile übergeben.' },
+  { oz: '01.03', kt: 'Arbeitsgerüst Mehrzweckraum, Arbeitshöhe bis 4,50 m', m: 1, e: 'psch', ep: 1250, src: ['frage'], lk: 1, h: 'Rückfrage 1: Gerüst im LV Trockenbau · Schnitt B-B: lichte Höhe 4,10 m', lt: 'Fahrbares Arbeitsgerüst für Arbeiten an Wänden und Decke des Mehrzweckraums, Arbeitshöhe bis 4,50 m, vorhalten über die Dauer der eigenen Arbeiten.' },
+  { g: '02', t: 'Wände' },
+  { oz: '02.01', kt: 'Metallständerwand W1, CW 75, beidseitig 2× GKB 12,5, MW 60 mm', m: 412.5, e: 'm²', ep: 68, src: ['bauteil', 'text'], bt: 'W1', zg: 'gemessen', h: 'Bauteil W1 aus dem IFC-Modell (41 Wandabschnitte) · Höhen aus A-301 · Langtext TB-039-014', lt: 'Nichttragende Metallständerwand, Einfachständerwerk CW 75, beidseitig doppelt beplankt mit Gipsplatten GKB 12,5 mm, Hohlraum mit Mineralwolle 60 mm, Wanddicke 125 mm, Höhe bis 3,00 m, R\'w ≥ 47 dB.',
+    mz: [['IFC', 'Wand W1-07, Gruppenraum 1 | 2', '8,00 × 3,00', 24], ['IFC', 'Wand W1-08, Gruppenraum 2 | 3', '8,00 × 3,00', 24], ['IFC', 'Wand W1-09, Gruppenraum 3 | Schlafraum', '8,00 × 3,00', 24], ['IFC', 'Wand W1-12, Küche | WC', '8,00 × 2,75', 22], ['…', '37 weitere Abschnitte', '', 318.5], ['VOB/C', 'Öffnungen ≤ 2,5 m² übermessen', '', 0]] },
+  { oz: '02.02', kt: 'Metallständerwand W2, EI 30, beidseitig 2× GKF 12,5', m: 186.2, e: 'm²', ep: 84, src: ['bauteil'], bt: 'W2', zg: 'gemessen', h: 'Bauteil W2 aus dem IFC-Modell · EI 30 aus Brandschutzkonzept Rev 1, Kap. 4.2', lt: 'Nichttragende Metallständerwand, Feuerwiderstand EI 30 nach allgemeinem bauaufsichtlichen Prüfzeugnis, CW 75, beidseitig doppelt beplankt mit GKF 12,5 mm, Mineralwolle nichtbrennbar.' },
+  { oz: '02.03', kt: 'Vorsatzschale W3, Installationsbereich, 2× GKBI', m: 58.4, e: 'm²', ep: 52, src: ['bauteil'], bt: 'W3', zg: 'gemessen', h: 'Bauteil W3 aus dem IFC-Modell · Lage der Vorwandinstallation aus S-201', lt: 'Vorsatzschale für Sanitärinstallation, freistehend, CW 50, einseitig doppelt beplankt mit imprägnierten Gipsplatten GKBI 12,5 mm.' },
+  { oz: '02.04', kurz: 'Zulage Wandhöhe über 3,00 m', kt: 'Zulage Wandhöhe über 3,00 bis 4,50 m', m: 74.8, e: 'm²', ep: 9.5, src: ['bauteil'], bt: 'H', lk: 1, zg: 'gemessen', h: 'Schnitt B-B: Mehrzweckraum 4,10 m · fehlte in allen Büro-LVs', lt: 'Zulage zu den Ständerwänden für Wandhöhen über 3,00 m bis 4,50 m, einschließlich statisch erforderlicher Profilverstärkung.' },
+  { oz: '02.05', kt: 'Türöffnung herstellen, UA-Profile, bis 1,01 × 2,13 m', m: 34, e: 'St', ep: 95, src: ['bauteil'], bt: 'T', zg: 'gezählt', h: 'IFC-Modell und Türliste A-501: 34 Innentüren in Trockenbauwänden', lt: 'Türöffnung in Metallständerwand herstellen, mit UA-Aussteifungsprofilen 2 mm, Sturzausbildung, lichte Rohbauöffnung bis 1,01 × 2,13 m.' },
+  { oz: '02.06', kt: 'Gleitender Deckenanschluss, 20 mm Bewegung', m: 296, e: 'm', ep: 14.5, src: ['bauteil', 'regel'], bt: 'A', lk: 1, zg: 'gemessen', h: 'Wandoberkanten aus dem Modell · Statik: Durchbiegung bis 15 mm · Rückfrage 3', lt: 'Gleitender Deckenanschluss für 20 mm vertikale Bewegung, mit Gleitprofil und Streifen aus GKF, Anschlussfuge dauerelastisch geschlossen.' },
+  { oz: '02.07', kt: 'Freies Wandende mit Kantenschutz', m: 12, e: 'St', ep: 38, src: ['bauteil'], zg: 'gezählt', h: 'Aus der Wandgeometrie des Modells gezählt', lt: 'Freies Wandende ausbilden, Abschluss mit UW-Profil und Kantenschutzprofil, gespachtelt.' },
+  { g: '03', t: 'Decken' },
+  { oz: '03.01', kt: 'Akustikdecke D1, GK-Lochplatte, Gruppen- und Schlafräume', m: 520, e: 'm²', ep: 72, src: ['bauteil'], bt: 'D1', zg: 'gemessen', vg: 1, h: 'Deckenflächen aus dem Modell · Akustik aus Baubeschreibung Kap. 3.4', lt: 'Abgehängte Akustikdecke aus Gipslochplatten, Lochanteil ca. 15 %, mit Akustikvlies, Abhängehöhe bis 400 mm. Leitfabrikat: wie Akustikdecke Typ „Rundloch 8/18“ oder gleichwertig.' },
+  { oz: '03.02', kt: 'Unterdecke D2, GKF, EI 30 von unten, Flur', m: 148, e: 'm²', ep: 78, src: ['bauteil'], bt: 'D2', zg: 'gemessen', h: 'Flurflächen aus dem Modell · EI 30 aus Brandschutzkonzept', lt: 'Abgehängte Unterdecke mit Feuerwiderstand EI 30 bei Brandbeanspruchung von unten, Beplankung 2× GKF 15 mm, nach Prüfzeugnis.' },
+  { oz: '03.03', kt: 'Revisionsöffnung 600 × 600 mm in Unterdecke EI 30', m: 18, e: 'St', ep: 145, src: ['fach', 'regel'], lk: 1, zg: 'gezählt', h: 'Lüftungsplan L-201: 18 Brandschutzklappen über dem Flur · Besondere Leistung nach ATV DIN 18340 Abschnitt 4.2', lt: 'Revisionsöffnung 600 × 600 mm in Unterdecke EI 30 herstellen, Revisionsklappe mit gleichem Feuerwiderstand liefern und einbauen.' },
+  { oz: '03.04', kt: 'Ausschnitt für Einbauleuchten, bis 0,1 m²', m: 96, e: 'St', ep: 12.5, src: ['fach', 'regel'], lk: 1, zg: 'gezählt', h: 'Elektroplan E-201: 96 Einbauleuchten in D1 und D2 · ATV DIN 18340 Abschnitt 4.2', lt: 'Ausschnitt in Unterdecke für Einbauleuchten herstellen, rund oder eckig bis 0,1 m², mit Auswechslung der Unterkonstruktion wo erforderlich.' },
+  { g: '04', t: 'Zulagen und Oberflächen' },
+  { oz: '04.01', kt: 'Ausschnitt für Hohlwanddosen', m: 64, e: 'St', ep: 8.5, src: ['fach', 'regel'], zg: 'gezählt', h: 'Elektroplan E-201 (Fachplaner-Sync): 64 Dosen in GK-Wänden · ATV DIN 18340 Abschnitt 4.2', lt: 'Ausschnitt für Hohlwanddose Ø 68 mm in Gipsplattenbeplankung herstellen.' },
+  { oz: '04.02', kt: 'Kabeldurchführung durch Wand EI 30, abgeschottet', m: 22, e: 'St', ep: 42, src: ['fach', 'regel'], zg: 'gezählt', h: 'Elektroplan E-201: 22 Trassenquerungen durch W2', lt: 'Kabeldurchführung durch Wand EI 30 herstellen und mit zugelassenem Abschottungssystem verschließen, Kennzeichnungsschild anbringen.' },
+  { oz: '04.03', kt: 'Verstärkung der Unterkonstruktion für Wandlasten', m: 26, e: 'St', ep: 34, src: ['fach'], zg: 'gezählt', h: 'Sanitärplan S-201: 26 Waschtische und Hängeschränke an GK-Wänden', lt: 'Traverse bzw. Holzeinlage in Ständerwand für Konsollasten bis 1,5 kN einbauen, Lage nach Sanitär- und Möblierungsplan.' },
+  { oz: '04.04', kt: 'Oberflächenqualität Q3, Gruppenräume', m: 640, e: 'm²', ep: 6.8, src: ['regelwerk', 'frage'], zg: 'gemessen', h: 'Büro-Regel „Aufenthaltsräume immer Q3“ · bestätigt in Rückfrage 2 · Wandflächen aus dem Modell', lt: 'Zulage für Oberflächenqualität Q3 nach Merkblatt Nr. 2 Bundesverband der Gipsindustrie: breites Ausspachteln der Kartonoberfläche.' },
+  { g: '05', t: 'Stundenlohnarbeiten' },
+  { oz: '05.01', kt: 'Stundenlohnarbeiten Facharbeiter', m: 32, e: 'h', ep: 58, src: ['erfahrung', 'regelwerk'], zg: 'geschätzt', h: 'Erfahrungswert 40 h · nach Büro-Regel auf 2 % der LV-Summe begrenzt', lt: 'Stundenlohnarbeiten nur auf Anordnung der Bauleitung, Facharbeiter einschließlich Werkzeug und Kleingerät.' },
+];
+const SRC = { bauteil: ['#3b82f6', 'Modell'], fach: ['#14b8a6', 'Fachplanung'], regel: ['#7c3aed', 'VOB/C 4.2'], buero: ['#a1a1aa', 'Büro-LV'], text: ['#52525b', 'Textdatenbank'], regelwerk: ['#e8622c', 'Büro-Regel'], erfahrung: ['#db2777', 'Erfahrung'], frage: ['#65a30d', 'Rückfrage'] };
+const hk = (s) => `<span class="hk"><i style="background:${SRC[s][0]}"></i>${SRC[s][1]}</span>`;
+
+const FRAGEN = [
+  { f: 'Schnitt B-B (A-301) · Mehrzweckraum', t: 'Lichte Höhe 4,10 m: Wer stellt das Arbeitsgerüst?', w: 'Ohne Festlegung ist das Gerüst ein typischer Nachtrag.', o: ['Im LV Trockenbau', 'Bauseits'], r: 0 },
+  { f: 'Baubeschreibung Kap. 3.2 · Gruppenräume', t: 'Oberflächenqualität der Wände?', w: '„Glatt, streichfertig“ ist nicht eindeutig. Ihr Regelwerk sagt Q3.', o: ['Q2', 'Q3', 'Q4'], r: 1 },
+  { f: 'Statik, Positionsplan Decke über EG', t: 'Durchbiegung bis 15 mm: Anschluss der Wände an die Decke?', w: 'Über 10 mm ist ein gleitender Anschluss erforderlich.', o: ['Gleitend 20 mm', 'Starr'], r: 0 },
+];
+
+// ---------- Leiste und Navigation ----------
+window.zeige = (id) => {
+  $$('.screen').forEach((s) => s.classList.toggle('on', s.id === id));
+  $$('.ri').forEach((r) => r.classList.remove('on'));
+  ({ projekte: '#r-home', lv: '#r-lv', fachplaner: '#r-fp' }[id]) && $({ projekte: '#r-home', lv: '#r-lv', fachplaner: '#r-fp' }[id]).classList.add('on');
+  if (id === 'portal') renderPortal();
+  if (id === 'lv') showTab('lv');
+  if (id === 'fachplaner') renderFp();
+};
+let lvOffen = false;
+$('#r-home').onclick = () => zeige('projekte');
+$('#r-lv').onclick = () => { if (lvOffen) zeige('lv'); };
+$('#r-fp').onclick = () => zeige('fachplaner');
+const pop = (id) => { const p = $(id), an = !p.classList.contains('on'); $$('.pop').forEach((x) => x.classList.remove('on')); p.classList.toggle('on', an); };
+$('#r-ds').onclick = (e) => { e.stopPropagation(); pop('#pop-ds'); };
+$('#r-tb').onclick = (e) => { e.stopPropagation(); pop('#pop-tb'); };
+document.addEventListener('click', (e) => { if (!e.target.closest('.pop')) $$('.pop').forEach((x) => x.classList.remove('on')); });
+$('#btn-ki').onclick = () => { $('#bd-wizard').classList.add('on'); wizStep(1); };
+
+// ---------- 3D-Modell (vereinfachte IFC-Ansicht) ----------
+// Grundriss EG 40 × 18 m, 20 px je m. Wände als Quader (in Stücke geteilt, damit die Tiefensortierung stimmt),
+// Decken als Platten, Türen als Blöcke. Projektion: Drehung um die Hochachse, dann schräg von oben.
+const WALLS = [
+  ['W2', 0, 160, 800, 160], ['W2', 0, 200, 800, 200],
+  ['W1', 200, 200, 200, 360], ['W1', 400, 200, 400, 360], ['W1', 600, 200, 600, 360],
+  ['W1', 260, 0, 260, 160], ['W1', 400, 0, 400, 160], ['W1', 520, 0, 520, 160], ['W1', 660, 0, 660, 160], ['W1', 590, 0, 590, 70], ['W1', 520, 70, 590, 70],
+  ['W3', 268, 12, 392, 12], ['W3', 408, 12, 512, 12],
+];
+const DOORS = [60, 150, 300, 450, 550, 740, 90, 290, 480, 690, 340, 610];
+function buildModel(neu) {
+  const E = [];
+  const wall = (typ, x1, y1, x2, y2, t, hFn) => {
+    const L = Math.hypot(x2 - x1, y2 - y1), n = Math.max(1, Math.ceil(L / 40));
+    for (let i = 0; i < n; i++) {
+      const a = i / n, b = (i + 1) / n, ax = x1 + (x2 - x1) * a, ay = y1 + (y2 - y1) * a, bx = x1 + (x2 - x1) * b, by = y1 + (y2 - y1) * b;
+      const mx = (ax + bx) / 2, my = (ay + by) / 2, tall = typ !== 'EXT' && mx <= 262 && my <= 162;
+      const dx = (bx - ax) / (L / n), dy = (by - ay) / (L / n), nx = -dy * t / 2, ny = dx * t / 2;
+      E.push({ k: 'box', typ, tall, z0: 0, z1: hFn(tall), p: [[ax + nx, ay + ny], [bx + nx, by + ny], [bx - nx, by - ny], [ax - nx, ay - ny]] });
+    }
+  };
+  const rect = (x, y, w, h) => [[x, y], [x, y + h], [x + w, y + h], [x + w, y]];
+  E.push({ k: 'floor', typ: 'FLOOR', z0: -2, z1: 0, p: rect(0, 0, 800, 360) });
+  const ext = () => 70;
+  wall('EXT', 0, 0, 800, 0, 9, ext); wall('EXT', 800, 0, 800, 360, 9, ext); wall('EXT', 800, 360, 0, 360, 9, ext); wall('EXT', 0, 360, 0, 0, 9, ext);
+  for (const [t, x1, y1, x2, y2] of WALLS) wall(neu && t === 'W1' && x1 === 660 ? 'W5' : t, x1, y1, x2, y2, t === 'W3' ? 4 : 6, (tall) => tall ? 82 : 60);
+  if (neu) wall('NEU', 500, 200, 500, 290, 7, () => 60);
+  DOORS.forEach((x, i) => { const y = i < 6 ? 160 : 200; E.push({ k: 'box', typ: 'DOOR', z0: 0, z1: 42, p: rect(x, y - 5, 20, 10) }); });
+  E.push({ k: 'box', typ: 'D1', z0: 55, z1: 57, p: rect(4, 204, 792, 152) });
+  E.push({ k: 'box', typ: 'D2', z0: 55, z1: 57, p: rect(4, 164, 792, 32) });
+  return E;
+}
+const MODEL = buildModel(false), MODEL_NEU = buildModel(true);
+const GW = { W1: 'tb', W2: 'tb', W3: 'tb', W5: 'tb', NEU: 'tb', D1: 'tb', D2: 'tb', DOOR: 'ti', FLOOR: 'bo', EXT: 'rb' };
+const GCOL = { tb: '#3b82f6', ti: '#b45309', bo: '#84cc16', rb: '#d4d4d8' };
+const TCOL = { W1: '#3b82f6', W2: '#ef4444', W3: '#14b8a6', W5: '#8b5cf6', NEU: '#22c55e', H: '#d97706', T: '#e8622c', D1: '#93c5fd', D2: '#fca5a5', A: '#f59e0b' };
+const VIEWERS = [];
+function viewer(svg, o = {}) { const v = { svg, mode: o.mode || 'typ', on: new Set(o.on || []), focus: null, neu: !!o.neu, base: o.base ?? -0.42, amp: o.amp ?? 0.16, t0: performance.now() }; VIEWERS.push(v); return v; }
+function farbe(v, e) { // → [Farbe, Deckkraft] oder null (nicht zeichnen)
+  if (v.mode === 'gewerk') {
+    const g = GW[e.typ], dim = v.focus && v.focus !== g;
+    if (e.typ === 'D1' || e.typ === 'D2') return dim ? ['#e4e4e7', 0.12] : [GCOL.tb, 0.28];
+    if (e.typ === 'EXT') return ['#e4e4e7', 0.5];
+    if (e.typ === 'FLOOR') return [dim ? '#f4f4f5' : GCOL.bo, dim ? 1 : 0.55];
+    return [dim ? '#e4e4e7' : GCOL[g], 1];
+  }
+  if (v.mode === 'diff') {
+    if (e.typ === 'NEU') return [TCOL.NEU, 1]; if (e.typ === 'W5') return [TCOL.W5, 1];
+    if (e.typ === 'D1' || e.typ === 'D2') return null; if (e.typ === 'FLOOR') return ['#f4f4f5', 1]; if (e.typ === 'EXT') return ['#e4e4e7', 0.5];
+    return ['#e4e4e7', 1];
+  }
+  if (e.typ === 'FLOOR') return ['#f4f4f5', 1];
+  if (e.typ === 'EXT') return ['#e4e4e7', 0.5];
+  if (e.typ === 'D1' || e.typ === 'D2') return v.on.has(e.typ) ? [TCOL[e.typ], 0.5] : null;
+  if (e.typ === 'DOOR') return [v.on.has('T') ? TCOL.T : '#d4d4d8', 1];
+  if (e.tall && v.on.has('H')) return [TCOL.H, 1];
+  return [v.on.has(e.typ) ? TCOL[e.typ] : '#d4d4d8', 1];
+}
+const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+const shade = (h, b) => 'rgb(' + hex(h).map((c) => Math.round(Math.min(255, c * b))).join(',') + ')';
+function render3d(v, t) {
+  const th = v.base + Math.sin((t - v.t0) / 2600) * v.amp, c = Math.cos(th), s = Math.sin(th);
+  const P = (x, y, z) => { const X = (x - 400) * c - (y - 180) * s, Y = (x - 400) * s + (y - 180) * c; return [X, Y * 0.56 - z * 1.0, Y]; };
+  const F = [];
+  for (const e of v.neu ? MODEL_NEU : MODEL) {
+    const f = farbe(v, e); if (!f) continue;
+    const [col, op] = f, top = e.p.map(([x, y]) => P(x, y, e.z1));
+    const topCol = e.typ !== 'EXT' && e.typ !== 'DOOR' && e.k === 'box' && v.mode === 'typ' && v.on.has('A') && !/^D/.test(e.typ) ? TCOL.A : col;
+    if (e.k === 'floor') { F.push([-1e9, top, shade(col, 1), op]); continue; }
+    for (let i = 0; i < 4; i++) {
+      const a = e.p[i], b = e.p[(i + 1) % 4], ex = b[0] - a[0], ey = b[1] - a[1], nx = -ey, ny = ex;
+      if (nx * s + ny * c <= 0) continue; // zeigt vom Betrachter weg
+      const L = Math.hypot(nx, ny) || 1, lx = (nx * c - ny * s) / L;
+      const q = [P(a[0], a[1], e.z0), P(b[0], b[1], e.z0), P(b[0], b[1], e.z1), P(a[0], a[1], e.z1)];
+      F.push([(q[0][2] + q[1][2]) / 2, q, shade(col, 0.8 + 0.12 * lx), op]);
+    }
+    F.push([top.reduce((m, p) => m + p[2], 0) / 4 + 0.01, top, shade(topCol, 1.06), op]);
+  }
+  F.sort((a, b) => a[0] - b[0]);
+  v.svg.innerHTML = F.map(([, q, f, o]) => `<path d="M${q.map((p) => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L')}Z" fill="${f}"${o < 1 ? ` fill-opacity="${o}"` : ''} stroke="rgba(0,0,0,.07)" stroke-width=".6"/>`).join('');
+}
+(function loop(t) { for (const v of VIEWERS) if (v.svg.getClientRects().length && !v.svg.classList.contains('off')) render3d(v, t); requestAnimationFrame(loop); })(performance.now());
+
+// ---------- Wizard ----------
+let step = 1;
+const NSTEP = 5;
+function wizStep(n) {
+  step = n;
+  $$('.pane', $('#wizard')).forEach((p, i) => p.classList.toggle('on', i + 1 === n));
+  $$('.step').forEach((s, i) => { s.classList.toggle('on', i + 1 === n); s.classList.toggle('done', i + 1 < n); $('i', s).textContent = i + 1 < n ? '✓' : i + 1; });
+  $('#wiz-back').style.visibility = n > 1 && n < NSTEP ? 'visible' : 'hidden';
+  const nx = $('#wiz-next');
+  nx.textContent = n === 4 ? '✦ LV erstellen' : n === NSTEP ? 'LV öffnen' : 'Weiter';
+  nx.disabled = n === NSTEP;
+  $('#wiz-hint').textContent = { 1: 'Alle Unterlagen bleiben im Projekt und werden beim Aktualisieren wiederverwendet.', 2: 'Die Mengen kommen aus Ihrem Modell und Ihren Plänen, die Texte aus Ihrem Regelwerk.', 3: 'Fahren Sie über ein Gewerk, um es im Modell zu sehen.', 4: 'Vorschlag des Assistenten jeweils vorausgewählt' }[n] || '';
+  if (n === 3) initGewerke();
+  if (n === NSTEP) generate();
+}
+$('#wiz-next').onclick = () => { if (step < NSTEP) wizStep(step + 1); else openLv(); };
+$('#wiz-back').onclick = () => wizStep(Math.max(1, step - 1));
+
+const extOf = (n) => n.split('.').pop().toLowerCase();
+async function addFiles(list, box) { // list: [Name, Status, (Ext), (Von)]
+  for (const [name, st, ex, von] of list) {
+    const el = document.createElement('div'); el.className = 'file';
+    const e = ex || extOf(name);
+    el.innerHTML = `<span class="ext ${e}">${{ orca: 'ORCA', cal: 'CAL' }[e] || e.toUpperCase()}</span><div style="min-width:0"><div class="nm">${name}</div>${von ? `<div class="von">${von}</div>` : ''}</div><span class="st"><span class="spin"></span>wird gelesen</span>`;
+    box.appendChild(el);
+    setTimeout(() => { const s = $('.st', el); s.className = 'st ok'; s.textContent = '✓ ' + st; }, (900 + Math.random() * 800) * TEMPO);
+    await sleep(240);
+  }
+}
+async function docsHochgeladen(names) {
+  await addFiles(names.map((n) => [n, DOCS[n] || 'gelesen']), $('#files-docs'));
+  await sleep(500);
+  $('#fach-st').style.display = '';
+  await addFiles(FACHDOCS.map(([n, von, st]) => [n, st, null, von]), $('#files-fach'));
+}
+$('#in-docs').onchange = (e) => docsHochgeladen([...e.target.files].map((f) => f.name));
+$('#in-old').onchange = (e) => addFiles([...e.target.files].map((f) => [f.name, 'gelesen']), $('#files-old'));
+if (!VIDEO) $('#in-docs').closest('label').onclick = (e) => { e.preventDefault(); if (!$('#files-docs').children.length) docsHochgeladen(Object.keys(DOCS)); };
+// Import aus der AVA-Software
+const IMPORT = [['Kita Am Park 2023', '039 Trockenbau · 42 Pos.', 1], ['Grundschule Nord 2022', '039 Trockenbau · 57 Pos.', 1], ['Wohnanlage Isarauen 2024', '039 Ausbau · 38 Pos.', 1], ['Rathaus Sanierung 2021', '039 Trockenbau · 31 Pos.', 0], ['Turnhalle Ost 2020', '039 Trockenbau · 24 Pos.', 0]];
+$('#ilist').innerHTML = IMPORT.map(([p, l, on]) => `<div class="irow${on ? ' on' : ''}"><span class="ck">✓</span><b style="font-weight:500">${p}</b><span class="muted">${l}</span><span class="m">mit Preisen</span></div>`).join('');
+$$('#ilist .irow').forEach((r) => r.onclick = () => r.classList.toggle('on'));
+$$('#ava-seg button').forEach((b) => b.onclick = () => { $$('#ava-seg button').forEach((x) => x.classList.remove('on')); b.classList.add('on'); });
+$('#btn-import').onclick = () => $('#bd-import').classList.add('on');
+$('#import-cancel').onclick = () => $('#bd-import').classList.remove('on');
+$('#import-go').onclick = async () => { $('#bd-import').classList.remove('on'); if (!$('#files-old').children.length) await addFiles(OLD.map(([n, e, st]) => [n, st, e]), $('#files-old')); };
+
+// Rückfragen
+$('#fragen').innerHTML = FRAGEN.map((q, i) => `<div class="q" style="width:calc(50% - 8px)" data-q="${i}"><div class="f">${q.f}</div><div class="t">${i + 1}. ${q.t}</div><div class="w">${q.w}</div>
+  <div class="opts">${q.o.map((o, j) => `<button class="opt${j === q.r ? ' on' : ''}" data-o="${j}">${o}${j === q.r ? '<span class="rec">Vorschlag</span>' : ''}</button>`).join('')}</div></div>`).join('');
+$$('.opts').forEach((q) => $$('.opt', q).forEach((b) => b.onclick = () => { $$('.opt', q).forEach((x) => x.classList.remove('on')); b.classList.add('on'); }));
+
+// Gewerke
+const GEWERKE = [
+  ['tb', '039 Trockenbau', 'DIN 18340', 'Modell', '412 m² Wände, 668 m² Decken', 98400, 1],
+  ['ti', '027 Tischler, Innentüren', 'DIN 18355', 'Modell, Türliste', '34 Türen', 61200],
+  ['ma', '034 Maler', 'DIN 18363', 'Modell', '2.140 m² Wand und Decke', 38600],
+  ['bo', '036 Bodenbelag', 'DIN 18365', 'Modell', '860 m²', 54300],
+  ['el', '053 Elektro', 'DIN 18382', 'Fachplaner-LV', '212 Positionen', 186000],
+  ['bl', '050 Blitzschutz', 'DIN 18384', 'Fachplaner-LV (PDF)', '38 Positionen', 14200],
+];
+const GDOT = { tb: '#3b82f6', ti: '#b45309', ma: '#f472b6', bo: '#84cc16', el: '#eab308', bl: '#64748b' };
+let vGw = null;
+function initGewerke() {
+  if (vGw) return;
+  vGw = viewer($('#m3-gw'), { mode: 'gewerk', base: -0.72, amp: 0.12 });
+  $('#gtab').innerHTML = '<tr><th>Vergabeeinheit</th><th>ATV</th><th>Quelle</th><th>Umfang</th><th class="r">Schätzung</th></tr>' +
+    GEWERKE.map(([k, n, atv, q, u, s, me]) => `<tr class="g${me ? ' me' : ''}" data-g="${k}"><td><i class="dot" style="background:${GDOT[k]};margin-right:8px"></i><b style="font-weight:${me ? 600 : 500}">${n}</b>${me ? ' <span class="tag t-ki" style="margin-left:6px">dieses LV</span>' : ''}</td><td class="muted">${atv}</td><td class="muted">${q}</td><td>${u}</td><td class="r">${eur(s).replace(',00', '')}</td></tr>`).join('');
+  $$('#gtab tr.g').forEach((r) => { r.onmouseenter = () => { vGw.focus = r.dataset.g; }; r.onmouseleave = () => { vGw.focus = null; }; });
+}
+
+// ---------- Grundriss (2D) ----------
+const ROOMS = [[130, 85, 'Mehrzweckraum · h 4,10 m'], [330, 85, 'Küche'], [460, 85, 'WC Kinder'], [555, 40, 'Personal'], [625, 115, 'Büro'], [730, 85, 'Technik'], [400, 184, 'Flur'], [100, 290, 'Gruppenraum 1'], [300, 290, 'Gruppenraum 2'], [500, 290, 'Gruppenraum 3'], [700, 290, 'Schlafraum']];
+function buildPlan() {
+  const s = [];
+  s.push('<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#bfdbfe" stroke-width="2"/></pattern><pattern id="hatch2" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#fecaca" stroke-width="2"/></pattern></defs>');
+  s.push('<text x="0" y="-10" style="font-size:12px;fill:#71717a;font-weight:600">A-201 Grundriss EG mit Fachplanung · M 1:50</text>');
+  s.push('<g class="ceil" id="c-D1"><rect x="4" y="204" width="792" height="152" fill="url(#hatch)" opacity=".6"/></g>');
+  s.push('<g class="ceil" id="c-D2"><rect x="4" y="164" width="792" height="32" fill="url(#hatch2)" opacity=".7"/></g>');
+  s.push('<rect class="ext-wall" x="0" y="0" width="800" height="360"/>');
+  WALLS.forEach(([t, x1, y1, x2, y2]) => s.push(`<line class="w ${t}" data-t="${t}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`));
+  DOORS.forEach((x, i) => { const y = i < 6 ? 160 : 200, d = i < 6 ? -1 : 1; s.push(`<path class="door" d="M${x} ${y} l0 ${d * 22} M${x} ${y + d * 22} A22 22 0 0 ${d > 0 ? 0 : 1} ${x + 22} ${y}"/>`); });
+  s.push('<g class="anschl" id="anschl"><line x1="0" y1="156" x2="800" y2="156"/><line x1="0" y1="204" x2="800" y2="204"/><line x1="196" y1="204" x2="196" y2="360"/><line x1="404" y1="204" x2="404" y2="360"/><line x1="604" y1="204" x2="604" y2="360"/></g>');
+  let k = 0;
+  for (let x = 30; x < 800; x += 46) { s.push(`<circle class="el dose" cx="${x}" cy="${153 - (k % 2) * 2}" r="3.2" style="transition-delay:${k * 30}ms"/>`); s.push(`<circle class="el dose" cx="${x + 12}" cy="207" r="3.2" style="transition-delay:${k * 30 + 15}ms"/>`); k++; }
+  for (const x of [200, 400, 600]) for (let y = 228; y < 350; y += 34) s.push(`<circle class="el dose" cx="${x + 3}" cy="${y}" r="3.2"/>`);
+  for (let x = 40; x < 800; x += 80) for (let y = 240; y < 350; y += 50) s.push(`<rect class="el leuchte" x="${x - 5}" y="${y - 5}" width="10" height="10" rx="2" style="fill:#eab308"/>`);
+  for (let x = 30; x < 800; x += 44) s.push(`<rect class="rev" x="${x - 6}" y="174" width="12" height="12"/>`);
+  ROOMS.forEach(([x, y, t]) => s.push(`<text class="room" x="${x}" y="${y}">${t}</text>`));
+  [['W1', 300, 236, '#3b82f6', 'W1'], ['W2', 820, 166, '#ef4444', 'W2'], ['W3', 330, 28, '#14b8a6', 'W3'], ['D1', 60, 340, '#2563eb', 'D1 Akustikdecke'], ['D2', 760, 192, '#ef4444', 'D2']].forEach(([id, x, y, c, t]) => s.push(`<text class="lbl" id="l-${id}" x="${x}" y="${y}" fill="${c}">${t}</text>`));
+  s.push('<text class="lbl" id="l-H" x="12" y="148" fill="#b45309">h 4,10 m → Zulage Wandhöhe</text>');
+  $('#plan').innerHTML = s.join('');
+}
+const ansicht = (v) => { $$('#vseg button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); $('#m3-gen').classList.toggle('off', v !== '3d'); $('#plan').classList.toggle('off', v !== '2d'); };
+$$('#vseg button').forEach((b) => b.onclick = () => ansicht(b.dataset.v));
+
+// ---------- Erstellen ----------
+const CHIPS = ['IFC-Modell', 'A-301 Schnitte', 'A-501 Türliste', 'E-201 Elektro', 'L-201 Lüftung', 'S-201 Sanitär', 'Statik', 'Brandschutz', 'Baubeschreibung', 'ATV DIN 18340', 'Büro-Regelwerk', '3 Büro-LVs', 'Rückfragen'];
+const chip = (name, cls) => { const c = $$('.chip').find((x) => x.textContent === name); if (c) { c.classList.remove('on', 'used'); c.classList.add(cls); } };
+const chipsOn = (names) => { $$('.chip.on').forEach((c) => { c.classList.remove('on'); c.classList.add('used'); }); names.forEach((n) => chip(n, 'on')); };
+const phase = (n) => $$('.ph').forEach((p, i) => { p.className = 'ph' + (i + 1 < n ? ' done' : i + 1 === n ? ' on' : ''); });
+let posN = 0, genStarted = false, vGen = null;
+function addPosRow(p) {
+  const r = document.createElement('div'); r.className = 'prow';
+  r.innerHTML = `<span class="oz">${p.oz}</span><span class="kt">${p.kt}</span><span class="hk">${hk(p.src[0])}</span><span class="mg">${num(p.m)} ${p.e}</span>`;
+  const box = $('#plist'); box.appendChild(r);
+  while (box.parentElement.scrollHeight > box.parentElement.clientHeight + 1 && box.children.length > 1) box.firstElementChild.remove();
+  $('#pos-count').textContent = `${++posN} von 19`;
+}
+const countUp = async (el, to, e, ms = 700) => { const n = 14; for (let i = 1; i <= n; i++) { el.textContent = `${num(Math.round((to * i / n) * 100) / 100)} ${e}`; await sleep(ms / n); } };
+window.gen = {};
+async function generate() {
+  if (genStarted) return; genStarted = true;
+  buildPlan(); vGen = viewer($('#m3-gen'), { mode: 'typ' });
+  $('#chips').innerHTML = CHIPS.map((c) => `<span class="chip">${c}</span>`).join('');
+  $('#btab').innerHTML = '<tr><th>Bauteil</th><th>Quelle</th><th class="r">Menge</th><th>→ Position</th></tr>' +
+    BAUTEILE.map((b) => `<tr class="hid" data-b="${b.id}"><td><span class="sw-c" style="background:${b.c}"></span><b style="font-weight:600">${b.id.length < 3 ? b.id : ''}</b> ${b.name}</td><td class="muted">${b.from}</td><td class="r m">–</td><td class="arrow"></td></tr>`).join('');
+  $('#plist').innerHTML = ''; $('#checks').innerHTML = ''; posN = 0;
+  gen.p1 = phase1(); await gen.p1;
+  if (!VIDEO) { await gen.phase2(); await gen.phase3(); await gen.phase4(); }
+}
+async function showBauteil(id, f) {
+  const b = BAUTEILE.find((x) => x.id === id); const tr = $(`#btab tr[data-b="${id}"]`); tr.classList.remove('hid');
+  vGen.on.add(id); if (f) f();
+  await countUp($('.m', tr), b.m, b.e);
+}
+async function phase1() {
+  phase(1); chipsOn(['IFC-Modell', 'A-301 Schnitte']); $('#scan').classList.add('on');
+  await sleep(1200);
+  const walls = (t) => $$(`#plan .w.${t}[data-t]`);
+  for (const t of ['W1', 'W2', 'W3']) { await showBauteil(t, () => { walls(t).forEach((w) => w.classList.add('on')); $(`#l-${t}`).classList.add('on'); }); await sleep(350); }
+  await showBauteil('H', () => $('#l-H').classList.add('on')); await sleep(300);
+  chipsOn(['IFC-Modell', 'A-501 Türliste']);
+  await showBauteil('T', () => $$('#plan .door').forEach((d) => d.classList.add('on'))); await sleep(300);
+  chipsOn(['IFC-Modell', 'Statik']);
+  await showBauteil('A', () => $('#anschl').classList.add('on')); await sleep(300);
+  chipsOn(['IFC-Modell', 'Baubeschreibung', 'Brandschutz']);
+  await showBauteil('D1', () => { $('#c-D1').classList.add('on'); $('#l-D1').classList.add('on'); }); await sleep(250);
+  await showBauteil('D2', () => { $('#c-D2').classList.add('on'); $('#l-D2').classList.add('on'); });
+  $('#scan').classList.remove('on');
+  await sleep(500);
+}
+gen.phase2 = async () => {
+  phase(2); chipsOn(['ATV DIN 18340', 'Büro-Regelwerk']);
+  for (const b of BAUTEILE) { $(`#btab tr[data-b="${b.id}"] .arrow`).textContent = '→ ' + b.pos; addPosRow(POS.find((x) => x.oz === b.pos)); await sleep(450); }
+  addPosRow(POS.find((x) => x.oz === '02.07')); await sleep(500);
+};
+gen.phase3 = async () => {
+  phase(3); ansicht('2d');
+  chipsOn(['E-201 Elektro']); await sleep(400); $$('#plan .el.dose').forEach((d) => d.classList.add('on')); await sleep(800);
+  addPosRow(POS.find((x) => x.oz === '04.01')); await sleep(600);
+  addPosRow(POS.find((x) => x.oz === '04.02')); await sleep(600);
+  $$('#plan .el.leuchte').forEach((d) => d.classList.add('on')); await sleep(600);
+  addPosRow(POS.find((x) => x.oz === '03.04')); await sleep(700);
+  chipsOn(['L-201 Lüftung']); $$('#plan .rev').forEach((d) => d.classList.add('on')); await sleep(800);
+  addPosRow(POS.find((x) => x.oz === '03.03')); await sleep(700);
+  chipsOn(['S-201 Sanitär']); await sleep(400);
+  addPosRow(POS.find((x) => x.oz === '04.03')); await sleep(700);
+  chipsOn(['Rückfragen', 'Büro-Regelwerk']);
+  addPosRow(POS.find((x) => x.oz === '01.03')); await sleep(500);
+  addPosRow(POS.find((x) => x.oz === '04.04')); await sleep(700);
+  chipsOn(['3 Büro-LVs', 'Büro-Regelwerk']);
+  for (const oz of ['01.01', '01.02', '05.01']) { addPosRow(POS.find((x) => x.oz === oz)); await sleep(550); }
+};
+const CHECKS = [
+  ['ok', 'VOB/C: Abschnitt 0 vollständig, Mengen nach Abschnitt 5'],
+  ['fx', 'VOB/C 4.1: Nebenleistung „Reinigen“ aus Büro-LV nicht übernommen'],
+  ['fx', 'VOB/A § 7: Produktname in 03.01 neutralisiert'],
+  ['fx', 'Büro-Regelwerk: Stundenlohn auf 2 % begrenzt (40 → 32 h)'],
+  ['ok', 'Lücken: 5 Leistungen ergänzt, ca. 9.900 € Nachtragsrisiko vermieden'],
+];
+gen.phase4 = async () => {
+  phase(4); chipsOn(['ATV DIN 18340', 'Büro-Regelwerk']);
+  for (const [k, t] of CHECKS) { const d = document.createElement('div'); d.className = 'check'; d.innerHTML = `<span class="${k}">${k === 'ok' ? '✓' : '✎'}</span>${t}`; $('#checks').appendChild(d); await sleep(850); }
+  phase(5); $$('.chip.on').forEach((c) => { c.classList.remove('on'); c.classList.add('used'); });
+  $('#wiz-next').disabled = false; $('#wiz-hint').textContent = '19 Positionen · 9 aus dem Modell, 10 lose Positionen · alle Mengen nachvollziehbar';
+};
+
+// ---------- LV ----------
+const state = { edits: {}, diff: null, versendet: false };
+function openLv() {
+  $('#bd-wizard').classList.remove('on'); lvOffen = true;
+  zeige('lv'); renderLv(); renderSide();
+}
+let selOz = null;
+const gp = (p) => Math.round(p.m * p.ep * 100) / 100;
+const AKTIV = () => POS.filter((p) => !p.g);
+function renderLv() {
+  const rows = ['<table class="lv"><tr><th style="width:72px;padding-left:20px">OZ</th><th>Kurztext</th><th style="width:140px">Herkunft</th><th class="r" style="width:120px">Menge</th><th style="width:56px">EH</th><th class="r" style="width:100px">EP</th><th class="r" style="width:124px;padding-right:20px">GP</th></tr>'];
+  let sum = 0;
+  for (const p of POS) {
+    if (p.g) { rows.push(`<tr class="grp"><td style="padding-left:20px">${p.g}</td><td colspan="6">${p.t}</td></tr>`); continue; }
+    sum += gp(p);
+    const d = state.diff && state.diff[p.oz];
+    const mz = d && d.m !== undefined ? `<span class="old">${num(d.m)}</span>${num(p.m)}` : num(p.m);
+    rows.push(`<tr class="pos${selOz === p.oz ? ' sel' : ''}${d ? (d.neu ? ' isneu' : ' chg') : ''}" data-oz="${p.oz}"><td style="padding-left:20px" class="muted">${p.oz}</td><td>${p.kt}</td><td>${hk(p.src[0])}${p.src.length > 1 ? `<span class="muted" style="font-size:11.5px"> +${p.src.length - 1}</span>` : ''}</td><td class="r">${mz}</td><td class="muted">${p.e}</td><td class="r ed" aria-label="EP ${p.oz}">${eur(p.ep)}</td><td class="r" style="padding-right:20px">${eur(gp(p))}</td></tr>`);
+    if (selOz === p.oz) rows.push(langtext(p));
+  }
+  rows.push(`<tr class="sum"><td></td><td>Summe netto</td><td></td><td></td><td></td><td></td><td class="r" style="padding-right:20px">${eur(sum)}</td></tr></table>`);
+  $('#lvgrid').innerHTML = rows.join('');
+  $('#lvinfo').innerHTML = `<b>${AKTIV().length} Positionen</b><span>${eur(sum)} netto</span><span class="muted">·</span><span>✦ aus IFC-Modell, 12 Unterlagen, 3 Büro-LVs und Ihrem Regelwerk</span>`;
+  $$('#lvgrid tr.pos').forEach((tr) => tr.onclick = (e) => { if (e.target.closest('td.ed')) return; selOz = selOz === tr.dataset.oz ? null : tr.dataset.oz; renderLv(); });
+  $$('#lvgrid td.ed').forEach((td) => td.onclick = () => editCell(td));
+}
+function langtext(p) {
+  const mz = p.mz ? `<table>${p.mz.map(([q, k, f, v]) => `<tr><td class="muted">${q}</td><td>${k}</td><td class="muted">${f}</td><td class="r">${v ? num(v) : '—'}</td></tr>`).join('')}<tr><td></td><td><b>Summe</b></td><td></td><td class="r"><b>${num(p.m)} ${p.e}</b></td></tr></table>` : `<div class="muted">${p.zg ? `Menge ${p.zg}: ` : ''}${p.h}</div>`;
+  return `<tr class="lt"><td colspan="7"><div class="ltbox"><div class="lt"><b class="k">LANGTEXT</b>${p.lt}
+    <div class="herk">${p.src.map(hk).join('<span class="muted">·</span>')}<span class="muted">—</span><span>${p.h}</span></div></div>
+    <div class="mz"><b class="k">MENGENERMITTLUNG${p.zg ? ` · ${p.zg.toUpperCase()}` : ''}</b>${mz}</div></div></td></tr>`;
+}
+function editCell(td) {
+  const oz = td.closest('tr').dataset.oz, p = POS.find((x) => x.oz === oz);
+  td.classList.add('focus'); td.innerHTML = `<input class="cell-in" value="${num(p.ep).replace(/\./g, '')}">`;
+  const inp = $('input', td); inp.focus(); inp.select();
+  let fertig = false;
+  const done = (ok) => { if (fertig) return; fertig = true; if (ok) { const v = parse(inp.value); if (v && v !== p.ep) { p.ep = v; state.edits[oz] = true; } } renderLv(); };
+  inp.onkeydown = (e) => { if (e.key === 'Enter') done(true); if (e.key === 'Escape') done(false); };
+  inp.onblur = () => done(true);
+}
+const PRUEF = () => [
+  ['vob', 'VOB/C', '3 Hinweise umgesetzt', [['✓ Abschnitt 0 vollständig', 'Raumhöhen, Brandschutz, Untergründe, Bauablauf'], ['✎ Abrechnung nach Abschnitt 5', 'Öffnungen ≤ 2,5 m² übermessen', '02.01'], ['✎ Nebenleistung entfernt (4.1)', '„Reinigen“ aus Büro-LV nicht übernommen']]],
+  ['vg', 'Vergaberecht', 'VOB/A § 7', [['✎ 03.01 produktneutral', 'Produktname ersetzt durch „oder gleichwertig“', '03.01'], ['✓ Eindeutig und erschöpfend', 'Keine Pauschale ohne Leistungsumfang']]],
+  ['rw', 'Büro-Regelwerk', '18 Regeln', [['✓ Aufenthaltsräume Q3', 'Position 04.04', '04.04'], ['✎ Stundenlohn ≤ 2 %', 'Von 40 auf 32 h begrenzt', '05.01'], ['✓ Vorbemerkungen', 'Standardtexte aus der Textdatenbank', '01.01']]],
+  ['lk', 'Lücken', `${POS.filter((p) => p.lk).length} geschlossen`, POS.filter((p) => p.lk).map((p) => [`${p.oz} ${p.kurz || p.kt.split(',')[0]}`, `${p.h.split(' · ')[0]} · Risiko ca. ${eur(gp(p)).replace(',00', '')}`, p.oz])],
+];
+let offenPr = null;
+function renderSide() {
+  $('#side').innerHTML = `<div style="display:flex;align-items:center;gap:8px"><h4>Prüfung</h4><span class="sp"></span><span class="status">● Bereit zum Versand</span></div>
+    <div class="muted" style="font-size:12.5px;margin-top:-4px">Automatisch beim Erstellen und nach jeder Änderung</div>
+    <div class="pg">${PRUEF().map(([k, t, n, l]) => `<div class="pr${offenPr === k ? ' open' : ''}" data-k="${k}"><span class="ok">✓</span><span>${t}</span><span class="n">${n}</span><span class="ch">›</span></div>
+      <div class="pdet${offenPr === k ? ' on' : ''}">${l.map(([h, s, oz]) => `<div class="it"${oz ? ` data-oz="${oz}"` : ''}><div class="h">${h}</div><div class="s">${s}</div></div>`).join('')}</div>`).join('')}</div>`;
+  $$('#side .pr').forEach((r) => r.onclick = () => { offenPr = offenPr === r.dataset.k ? null : r.dataset.k; renderSide(); });
+  $$('#side .it[data-oz]').forEach((it) => it.onclick = () => { selOz = it.dataset.oz; renderLv(); const tr = $(`#lvgrid tr[data-oz="${selOz}"]`); tr.scrollIntoView({ block: 'center', behavior: 'smooth' }); tr.classList.add('hl'); });
+}
+
+// ---------- Fachplaner ----------
+const FP = [
+  ['Elektro', 'Ing.-Büro Lechner', [['pdf', 'E-201 Elektro EG Index B'], ['x83', 'LV 053 Niederspannung · 212 Pos.']], 'vor 2 Std.', 'Pläne, eigenes LV 053'],
+  ['Blitzschutz', 'Planungsbüro Erdmann', [['pdf', 'BL-101 Dachaufsicht'], ['pdf', 'LV 050 · 38 Pos. aus PDF gelesen']], 'gestern', 'Pläne, eigenes LV 050'],
+  ['Lüftung und Sanitär', 'TGA-Plan GmbH', [['pdf', 'L-201 Lüftung EG'], ['dwg', 'S-201 Sanitär EG']], 'vor 3 Tagen', 'Pläne · LV 075 folgt bis 10.11.'],
+  ['Tragwerk', 'Ing.-Büro Berger', [['pdf', 'Positionsplan Decke über EG']], 'vor 1 Woche', 'Pläne'],
+];
+const SCHN = [
+  { id: 's1', t: 'Hohlwanddosen', a: '039 · 04.01 Ausschnitt, 64 St', f: '053 · 03.12 Dose setzen, 71 St', st: ['t-gelb', 'Mengen weichen ab'], d: 'Der Elektroplan Index B hat 7 Dosen mehr als der Stand im LV 039.', v: 'LV 039 auf den neuen Planstand aktualisieren.' },
+  { id: 's2', t: 'Kabeldurchführung EI 30', a: '039 · 04.02 Abschottung, 22 St', f: '053 · 07.04 Abschottung, 22 St', st: ['t-gelb', 'doppelt ausgeschrieben'], d: 'Die Abschottung steht in beiden LVs. Das kostet doppelt oder führt auf der Baustelle zu Streit, wer sie ausführt.', v: 'Im LV 053 streichen, die Abschottung bleibt beim Trockenbau.',
+    msg: 'Hallo Herr Lechner, im LV 053 steht in Pos. 07.04 die Abschottung der 22 Kabeldurchführungen durch die EI-30-Wände. Die gleiche Leistung ist im LV 039 Trockenbau unter 04.02 ausgeschrieben. Wir schlagen vor, 07.04 zu streichen. Passt das für Sie?' },
+  { id: 's3', t: 'Leuchtenausschnitte', a: '039 · 03.04, 96 St', f: '053 · 05.02 Einbauleuchten, 96 St', st: ['t-ok', 'abgestimmt'] },
+  { id: 's4', t: 'Revisionsöffnungen', a: '039 · 03.03, 18 St', f: 'L-201 · 18 Brandschutzklappen', st: ['t-ok', 'abgestimmt'] },
+  { id: 's5', t: 'Blitzschutz Dachdurchführung', a: '021 Dachabdichtung · fehlt', f: '050 · 02.07 Dachdurchführung, 6 St', st: ['t-rot', 'Lücke'], d: 'Für die 6 Durchführungen der Fangleitung fehlt der Anschluss der Abdichtung.', v: 'Position „Anschluss an Dachdurchführung“ im LV 021 ergänzen.' },
+  { id: 's6', t: 'Wandlasten Sanitär', a: '039 · 04.03 Verstärkung, 26 St', f: 'S-201 · 26 Waschtische und Schränke', st: ['t-ok', 'abgestimmt'] },
+];
+let schnSel = null;
+function renderFp() {
+  $('#fp-l').innerHTML = '<div class="h-sec">FACHPLANER IM PROJEKT</div>' + FP.map(([g, n, l, sy, rt]) => `<div class="card fpc"><div class="g">${g}</div><div class="n">${n}<span class="sy"><i class="dot" style="background:#22c55e"></i>${sy}</span></div>
+    ${l.map(([e, t]) => `<div class="d"><span class="ext ${e}">${e.toUpperCase()}</span>${t}</div>`).join('')}<div class="rt">Rechte: sieht ${rt}</div></div>`).join('');
+  $('#fp-sum').textContent = '· 250 Positionen der Fachplaner mit den Architekten-LVs abgeglichen';
+  $('#stab').innerHTML = '<tr><th>Schnittstelle</th><th>Architekten-LV</th><th>Fachplaner</th><th>Status</th></tr>' +
+    SCHN.map((s) => `<tr class="s${schnSel === s.id ? ' sel' : ''}" data-s="${s.id}"><td><b style="font-weight:500">${s.t}</b></td><td class="sub">${s.a}</td><td class="sub">${s.f}</td><td>${tag(s.st[0], s.st[1])}</td></tr>`).join('');
+  $$('#stab tr.s').forEach((r) => r.onclick = () => { schnSel = r.dataset.s; renderFp(); });
+  const s = SCHN.find((x) => x.id === schnSel), det = $('#sdet');
+  det.classList.toggle('on', !!(s && s.d));
+  if (s && s.d) det.innerHTML = `<div style="flex:1"><div style="font-weight:600;margin-bottom:4px">${s.t}</div><div style="font-size:13px;color:var(--soft);margin-bottom:8px">${s.d}</div><div style="font-size:13px"><span style="color:var(--accent);font-weight:600">✦ Vorschlag:</span> ${s.v}</div></div>` +
+    (s.msg ? `<div class="msg"><div style="font-weight:600;color:var(--accent);margin-bottom:4px">✦ Nachricht an Ing.-Büro Lechner (Entwurf)</div>${s.msg}<div style="display:flex;gap:8px;margin-top:10px;align-items:center"><span class="hitl">Wird erst nach Ihrer Freigabe gesendet</span><span class="sp"></span><button class="btn sm primary" id="fp-go">Freigeben und senden</button></div></div>` : '');
+  const go = $('#fp-go'); if (go) go.onclick = () => { go.textContent = '✓ Gesendet'; go.disabled = true; };
+}
+
+// ---------- Planänderung ----------
+let vRerun = null;
+$('#btn-rerun').onclick = async () => {
+  $('#bd-rerun').classList.add('on');
+  if (!vRerun) vRerun = viewer($('#m3-rerun'), { mode: 'diff', neu: true, amp: 0.1 });
+  if ($('#files-new').children.length) return;
+  await addFiles(NEWDOCS.map(([n, von, st]) => [n, st, null, von]), $('#files-new'));
+  await sleep(1400); $('#rerun-go').disabled = false;
+};
+$('#rerun-cancel').onclick = () => $('#bd-rerun').classList.remove('on');
+$('#rerun-go').onclick = async () => {
+  const b = $('#rerun-go'); b.innerHTML = '<span class="spin" style="border-top-color:#fff"></span>Vergleiche Planstände …'; await sleep(2000);
+  $('#bd-rerun').classList.remove('on');
+  const ch = (oz, m) => { const p = POS.find((x) => x.oz === oz); state.diff[oz] = { m: p.m }; p.m = m; };
+  state.diff = {};
+  ch('02.01', 438.75); ch('02.05', 35); ch('04.01', 71); ch('04.04', 664);
+  const i = POS.findIndex((x) => x.oz === '02.07');
+  POS.splice(i + 1, 0, { oz: '02.08', kt: 'Metallständerwand W5, EI 90, Technikraum, 2× GKF 15', m: 42, e: 'm²', ep: 96, src: ['bauteil'], zg: 'gemessen', h: 'Brandschutzkonzept Rev 2: Technikraum EI 90 · Wandfläche aus dem Modell Index C', lt: 'Nichttragende Metallständerwand EI 90 nach Prüfzeugnis, CW 100, beidseitig doppelt beplankt mit GKF 15 mm, Mineralwolle nichtbrennbar.' });
+  state.diff['02.08'] = { neu: true };
+  selOz = null; renderLv(); renderSide();
+  const bn = $('#banner'); bn.classList.add('on'); bn.style.display = '';
+  bn.innerHTML = `<b>↻ 5 Positionen angepasst</b><span>4 Mengen geändert, 1 Position neu. Ihre eigenen Änderungen bleiben erhalten.</span><span class="sp"></span><button class="btn sm">Einzeln prüfen</button><button class="btn sm primary" id="diff-ok">Alle übernehmen</button>`;
+  $('#diff-ok').onclick = () => { state.diff = null; bn.classList.remove('on'); renderLv(); };
+};
+
+// ---------- Senden ----------
+const BIETER = [
+  ['Ausbau Huber GmbH', 'angebote@ausbau-huber.de'], ['Bauer Akustik GmbH', 'info@bauer-akustik.de'], ['Trockenbau Meier KG', 'kalkulation@meier-tb.de'],
+  ['Schmid Innenausbau', 'buero@schmid-innenausbau.de'], ['Wagner Trockenbau', 'wagner@wagner-tb.de'], ['Keller Ausbau GmbH', 'angebot@keller-ausbau.de'],
+];
+$('#recips').innerHTML = `<div class="recip plat"><b>Vergabeplattform</b><span class="em">Bekanntmachung und Unterlagen</span><span class="st">bereit</span></div>` + BIETER.map(([n, m]) => `<div class="recip"><b>${n}</b><span class="em">${m}</span><span class="st">bereit</span></div>`).join('');
+$('#btn-senden').onclick = () => { $('#mail-n').textContent = AKTIV().length; $('#bd-senden').classList.add('on'); };
+$('#senden-cancel').onclick = () => $('#bd-senden').classList.remove('on');
+$('#senden-go').onclick = async () => {
+  $('#senden-go').innerHTML = '<span class="spin" style="border-top-color:#fff"></span>Wird gesendet …';
+  for (const [k, st] of $$('#recips .st').entries()) { st.innerHTML = '<span class="spin"></span>'; await sleep(330); st.className = 'st ok'; st.textContent = k === 0 ? '✓ veröffentlicht' : '✓ zugestellt'; }
+  $('#senden-go').textContent = '✓ Gesendet';
+  $('#lv-status').innerHTML = '<span class="status">● Versendet · Frist 17.11.</span>';
+  state.versendet = true;
+  if (!VIDEO) { $('#senden-cancel').textContent = 'Schließen'; return; }
+  await sleep(1300);
+  $('#bd-senden').classList.remove('on');
+};
+$('#mail-link').onclick = () => { if (VIDEO) return; $('#bd-senden').classList.remove('on'); zeige('portal'); $('#portal-zurueck').style.display = ''; };
+
+// ---------- Bieterportal ----------
+function renderPortal() {
+  $('#portal-tab').innerHTML = '<tr><th style="width:62px">OZ</th><th>Kurztext</th><th class="r" style="width:100px">Menge</th><th style="width:60px">EH</th><th class="r" style="width:140px">EP netto</th><th class="r" style="width:140px">GP netto</th></tr>' +
+    AKTIV().map((p) => `<tr><td>${p.oz}</td><td>${p.kt}</td><td class="r">${num(p.m)}</td><td>${p.e}</td><td class="r"><input class="pin" data-oz="${p.oz}" aria-label="Portal EP ${p.oz}"></td><td class="r gp">–</td></tr>`).join('');
+  $$('.pin').forEach((i) => { i.oninput = portalSum; i.onkeydown = (e) => { if (e.key === 'Enter') { const all = $$('.pin'); const n = all[all.indexOf(i) + 1]; if (n) n.focus(); } }; });
+  portalSum();
+}
+function portalSum() {
+  let s = 0, f = 0;
+  $$('.pin').forEach((i) => { const p = POS.find((x) => x.oz === i.dataset.oz), v = parse(i.value); const gpc = i.closest('tr').querySelector('.gp');
+    if (v) { s += p.m * v; f++; gpc.textContent = eur(p.m * v); } else gpc.textContent = '–'; });
+  $('#portal-sum').textContent = eur(s); $('#portal-fill').textContent = `${f} von ${$$('.pin').length} bepreist`;
+}
+window.portalPrefill = async (n, stagger = 0) => {
+  const all = $$('.pin');
+  for (const [k, i] of all.entries()) { if (k >= n && !i.value) { const p = POS.find((x) => x.oz === i.dataset.oz); i.value = num(Math.round(p.ep * FAKT['Bauer Akustik GmbH'](p) * 100) / 100); portalSum(); if (stagger) await sleep(stagger); } }
+};
+$('#btn-x84').onclick = () => portalPrefill(0, 60);
+$('#portal-zurueck').onclick = () => zeige('lv');
+$('#btn-abgeben').onclick = () => { const b = $('#btn-abgeben'); b.textContent = '🔒 Abgegeben · verschlüsselt bis 17.11., 12:00'; b.style.background = '#15803d'; b.style.borderColor = '#15803d'; };
+
+// ---------- Preisspiegel ----------
+const hash = (s) => { let h = 7; for (const c of s) h = (h * 31 + c.charCodeAt(0)) % 9973; return (h % 1000) / 1000; };
+const FAKT = {
+  'Ausbau Huber GmbH': (p) => 0.95 + hash('H' + p.oz) * 0.15,
+  'Bauer Akustik GmbH': (p) => 0.88 + hash('B' + p.oz) * 0.1,
+  'Trockenbau Meier KG': (p) => p.oz === '03.03' ? 2.6 : 0.91 + hash('M' + p.oz) * 0.18,
+  'Schmid Innenausbau': (p) => p.oz === '01.03' ? 0 : 0.98 + hash('S' + p.oz) * 0.16,
+};
+const KANAL = { 'Ausbau Huber GmbH': 'Vergabeplattform · GAEB X84', 'Bauer Akustik GmbH': 'Bieterportal · eingetragen', 'Trockenbau Meier KG': 'Vergabeplattform · PDF gelesen', 'Schmid Innenausbau': 'Vergabeplattform · eingetragen' };
+function preise(b) { const o = {}; for (const p of AKTIV()) { const f = FAKT[b](p); o[p.oz] = f ? Math.round(p.ep * f * 100) / 100 : null; } return o; }
+const kurzN = (b) => b.replace(' GmbH', '').replace(' KG', '');
+let psShown = [];
+function renderPs() {
+  const B = psShown, P = Object.fromEntries(B.map((b) => [b, preise(b)]));
+  const sumOf = (b) => AKTIV().reduce((s, p) => s + (P[b][p.oz] || 0) * p.m, 0);
+  const sums = B.map(sumOf), schaetz = AKTIV().reduce((s, p) => s + gp(p), 0);
+  const order = [...sums].sort((a, b) => a - b);
+  let h = '<table class="lv ps"><tr><th style="width:74px;padding-left:20px">OZ</th><th>Kurztext</th><th class="r" style="width:96px">Menge</th><th class="r" style="width:120px">Schätzung</th>' + B.map((b) => `<th class="b" style="width:122px">${kurzN(b)}</th>`).join('') + '</tr>';
+  for (const p of AKTIV()) {
+    const v = B.map((b) => P[b][p.oz]).filter((x) => x), min = Math.min(...v), mit = v.reduce((a, b) => a + b, 0) / (v.length || 1);
+    h += `<tr><td style="padding-left:20px" class="muted">${p.oz}</td><td>${p.kt}</td><td class="r">${num(p.m)} ${p.e}</td><td class="r dim">${eur(p.ep)}</td>` +
+      B.map((b) => { const x = P[b][p.oz]; if (!x) return '<td class="r leer">fehlt</td>'; const cls = x === min && v.length > 1 ? 'best' : x > mit * 1.5 ? 'ausr' : ''; return `<td class="r ${cls}">${eur(x)}</td>`; }).join('') + '</tr>';
+  }
+  h += `<tr class="sum"><td></td><td>Angebotssumme netto</td><td></td><td class="r">${eur(schaetz)}</td>${sums.map((s) => `<td class="r${B.length > 1 && s === order[0] ? ' rank1' : ''}">${eur(s)}</td>`).join('')}</tr>`;
+  h += `<tr class="sum"><td></td><td>Abweichung · Rang</td><td></td><td></td>${sums.map((s) => `<td class="r">${((s / schaetz - 1) * 100).toFixed(1).replace('.', ',')} % · ${order.indexOf(s) + 1}.</td>`).join('')}</tr></table>`;
+  $('#psgrid').innerHTML = h;
+  if (B.length === 4) {
+    const best = B[sums.indexOf(order[0])], m33 = preise('Trockenbau Meier KG')['03.03'], andere = B.filter((x) => x !== 'Trockenbau Meier KG').map((x) => preise(x)['03.03']).filter((x) => x);
+    $('#psside').innerHTML = `<h4>Auswertung</h4>
+      <div class="ctx ok"><div class="h">Günstigster Bieter: ${kurzN(best)}</div><div class="s">${eur(order[0])} netto · ${((order[0] / schaetz - 1) * 100).toFixed(1).replace('.', ',')} % zur Schätzung</div></div>
+      <div class="ctx"><div class="h">${tag('t-gelb', 'Prüfen')} Meier, 03.03</div><div class="s">EP ${eur(m33)}, das ${(m33 / (andere.reduce((s, x) => s + x, 0) / andere.length)).toFixed(1).replace('.', ',')}-Fache der übrigen. Möglicher Spekulationspreis.</div></div>
+      <div class="ctx"><div class="h">${tag('t-gelb', 'Prüfen')} Schmid, 01.03</div><div class="s">Gerüst nicht bepreist. Aufklärung nach § 15 VOB/A.</div></div>
+      <div class="ctx"><div class="h">Wagner abgesagt · Keller kein Angebot</div><div class="s">Erinnerung am 13.11. nach Freigabe versendet.</div></div>
+      <button class="btn primary" style="align-self:flex-start">Vergabevorschlag erstellen</button>`;
+  } else $('#psside').innerHTML = `<h4>Auswertung</h4><div class="muted" style="font-size:12.5px">Wird aktualisiert, sobald Angebote eingelesen sind.</div>`;
+}
+function showTab(t) {
+  $$('#lv-tabs button').forEach((b) => b.classList.toggle('on', b.dataset.t === t));
+  $('#lvmain').style.display = t === 'lv' ? 'flex' : 'none'; $('#psmain').style.display = t === 'ps' ? 'flex' : 'none';
+  $('#bimain').style.display = t === 'bi' ? 'flex' : 'none';
+  $('#lvinfo').style.display = t === 'lv' ? 'flex' : 'none'; $('#banner').style.display = t === 'lv' && state.diff ? '' : 'none';
+  if (t === 'bi') { renderBi(); if (!VIDEO && state.versendet && !bi.angekommen && !bi.laeuft) posteingang(); }
+  if (t === 'ps') { renderPs(); if (!VIDEO && !psShown.length && !eingangLaeuft) { eingangLaeuft = true; eingang(); } }
+}
+let eingangLaeuft = false;
+$$('#lv-tabs button').forEach((b) => b.onclick = () => showTab(b.dataset.t));
+const INB = [...Object.keys(KANAL), 'Wagner Trockenbau', 'Keller Ausbau GmbH'];
+$('#inbox').innerHTML = INB.map((b) => `<div class="inb${KANAL[b] ? '' : ' off'}" data-b="${b}"><b>${kurzN(b)}</b><span class="muted">${KANAL[b] || (b.startsWith('Wagner') ? 'abgesagt' : 'kein Angebot')}</span></div>`).join('');
+window.eingang = async () => {
+  for (const b of INB) {
+    if (b === 'Trockenbau Meier KG') await einlesen(b);
+    $(`.inb[data-b="${b}"]`).classList.add('on');
+    if (KANAL[b]) { psShown.push(b); renderPs(); }
+    await sleep(1100);
+  }
+};
+// PDF-Angebot einlesen: Seite links, erkannte Preise rechts
+async function einlesen(b) {
+  const P = preise(b), L = AKTIV(), sum = L.reduce((s, p) => s + (P[p.oz] || 0) * p.m, 0);
+  $('#ein-titel').textContent = `${b} · Angebot.pdf, 3 Seiten · von der Vergabeplattform`;
+  $('#ein-page').innerHTML = `<h5>Trockenbau Meier KG</h5><div style="color:#777">Industriestr. 12 · 85xxx Musterort · kalkulation@meier-tb.de</div><div style="margin-top:12px"><b>Angebot Nr. 2026-311</b> · BV Kita Sonnenhof · Trockenbauarbeiten</div>
+    <table>${L.map((p) => `<tr><td>${p.oz}</td><td style="max-width:210px;overflow:hidden;text-overflow:ellipsis">${p.kt}</td><td class="r">${num(p.m)} ${p.e}</td><td class="r">${num(P[p.oz])}</td><td class="r">${num(Math.round(P[p.oz] * p.m * 100) / 100)}</td></tr>`).join('')}
+    <tr><td></td><td><b>Angebotssumme netto</b></td><td></td><td></td><td class="r"><b>${num(Math.round(sum * 100) / 100)}</b></td></tr></table><div class="scanbox" id="scanbox"></div>`;
+  $('#ein-tab').innerHTML = '<tr><th>OZ</th><th>Position im LV</th><th class="r">EP erkannt</th><th></th></tr>' + L.map((p) => `<tr class="leer" data-oz="${p.oz}"><td>${p.oz}</td><td style="max-width:260px;overflow:hidden;text-overflow:ellipsis">${p.kt}</td><td class="r">–</td><td></td></tr>`).join('');
+  $('#ein-check').innerHTML = ''; $('#ein-go').disabled = true; $('#ein-go').textContent = 'In den Preisspiegel übernehmen';
+  $('#bd-einlesen').classList.add('on');
+  await sleep(500);
+  const sb = $('#scanbox'); sb.style.display = 'block';
+  const rows = $$('#ein-page table tr');
+  for (const [k, p] of L.entries()) {
+    const r = rows[k]; sb.style.top = (r.offsetTop + $('#ein-page table').offsetTop - 2) + 'px';
+    const tr = $(`#ein-tab tr[data-oz="${p.oz}"]`); tr.className = 'neu'; tr.cells[2].textContent = eur(P[p.oz]); tr.cells[3].innerHTML = p.oz === '03.03' ? tag('t-gelb', 'auffällig') : '<span style="color:var(--green)">✓</span>';
+    await sleep(150);
+  }
+  sb.style.display = 'none';
+  $('#ein-check').innerHTML = `<div><span class="ok">✓</span>${L.length} von ${L.length} Positionen erkannt und zugeordnet</div><div><span class="ok">✓</span>Summe ${eur(sum)} stimmt mit der Angebotssumme überein</div><div><span class="ok">✓</span>Geöffnet nach dem Eröffnungstermin 17.11., 12:00</div>`;
+  $('#ein-go').disabled = false;
+  await new Promise((res) => { $('#ein-go').onclick = res; if (!VIDEO) return; setTimeout(res, 2200 * TEMPO); });
+  $('#bd-einlesen').classList.remove('on');
+}
+
+// ---------- Bieter & Rückfragen ----------
+// Postfach nach dem Versand: Rückfragen per Mail, Portal oder Vergabeplattform, Absagen, Erinnerungen. Die KI entwirft jede
+// Antwort mit dem Projektkontext, gesendet wird erst nach Freigabe. Antworten auf Rückfragen gehen nach § 12a Abs. 4 VOB/A
+// als Bieterinformation an alle Bieter (und auf die Vergabeplattform), ohne Namen des Fragestellers.
+const R = (t) => `<span class="ref" contenteditable="false">${t}</span>`;
+const BI = {
+  'Ausbau Huber GmbH': { kanal: 'Plattform', l: 'geöffnet · GAEB X83 geladen', ev: [['27.10., 14:02', 'Auf der Vergabeplattform bereitgestellt'], ['27.10., 15:31', 'Unterlagen abgerufen'], ['28.10., 08:11', 'GAEB X83 heruntergeladen']], hist: [['Kita Am Park 2023', 'Angebot abgegeben, Rang 2 von 5'], ['Wohnanlage Isarauen 2024', 'Zuschlag erhalten, keine Nachträge']] },
+  'Bauer Akustik GmbH': { kanal: 'Portal', l: '12 von 19 Preisen eingetragen', ev: [['27.10., 14:02', 'LV zugestellt'], ['27.10., 18:20', 'Im Bieterportal angemeldet'], ['04.11., 10:05', '12 von 19 Preisen eingetragen (Entwurf)']], hist: [['Neu im Verteiler', 'Referenz: Akustikdecken Grundschule Nord (anderer Planer)']] },
+  'Trockenbau Meier KG': { kanal: 'Mail', l: 'geöffnet · X83 und Pläne geladen', ev: [['27.10., 14:02', 'LV zugestellt: X83, PDF, Modell'], ['27.10., 16:45', 'Mail geöffnet'], ['28.10., 09:20', 'GAEB X83 und Pläne heruntergeladen']], hist: [['Grundschule Nord 2022', 'Angebot abgegeben, Rang 1, Zuschlag'], ['Nachtrag damals', 'Revisionsöffnungen nicht im LV, 2.300 €. Diesmal als 03.03 ausgeschrieben.']] },
+  'Schmid Innenausbau': { kanal: 'Plattform', l: 'Unterlagen abgerufen', ev: [['27.10., 14:02', 'Auf der Vergabeplattform bereitgestellt'], ['29.10., 07:48', 'Unterlagen abgerufen']], hist: [['Kita Am Park 2023', 'Angebot abgegeben, Rang 4 von 5']] },
+  'Wagner Trockenbau': { kanal: 'Mail', l: 'geöffnet', ev: [['27.10., 14:02', 'LV zugestellt'], ['27.10., 17:12', 'Mail geöffnet']], hist: [['Grundschule Nord 2022', 'Abgesagt (Kapazität)']] },
+  'Keller Ausbau GmbH': { kanal: 'Mail', l: 'nicht geöffnet, nichts geladen', ev: [['27.10., 14:02', 'LV zugestellt']], hist: [['Bisher kein Projekt mit dem Büro', 'Aus dem Verteiler Raum München']] },
+};
+const MSGS = [
+  { id: 'm1', b: 'Trockenbau Meier KG', von: 'kalkulation@meier-tb.de', kanal: 'Mail', d: '03.11.', zeit: '03.11., 09:14', typ: 'frage', nr: 1, betr: 'Pos. 03.03 Revisionsöffnungen',
+    text: 'Guten Tag, zu Pos. 03.03: Für welche Einbauten sind die 18 Revisionsöffnungen vorgesehen, und müssen die Klappen selbst EI 30 erfüllen? Wie hoch ist die Abhängung im Flur? Gruß, J. Meier',
+    frage: 'Für welche Einbauten sind die Revisionsöffnungen in Pos. 03.03 vorgesehen, und müssen die Klappen selbst EI 30 erfüllen? Wie hoch ist die Abhängung im Flur?',
+    antwort: `Die 18 Revisionsöffnungen liegen in der Flurdecke D2 unter den Brandschutzklappen der Lüftung.${R('L-201')} Die Revisionsklappen müssen wie die Decke EI 30 von unten erfüllen, mit Prüfzeugnis.${R('LV 03.03')}${R('Brandschutz 4.2')}<ins id="caret">​</ins> Die Abhängehöhe im Flur beträgt ca. 350 mm.${R('IFC-Modell')}`,
+    ctx: [['t-ki', 'LV', '03.03 Revisionsöffnung in Unterdecke EI 30', 'Langtext: Klappe mit gleichem Feuerwiderstand'], ['t-blau', 'Fachplaner', 'L-201 Lüftung EG', '18 Brandschutzklappen über dem Flur'], ['t-lila', 'Anforderung', 'Brandschutzkonzept Rev 1, Kap. 4.2', 'Flurdecke EI 30 von unten'], ['t-grau', 'Modell', 'IFC, Flur', 'Rohdecke 3,10 m, Unterdecke 2,75 m: 350 mm']] },
+  { id: 'm2', b: 'Ausbau Huber GmbH', von: 'über die Vergabeplattform', kanal: 'Plattform', d: '04.11.', zeit: '04.11., 16:40', typ: 'frage', nr: 2, betr: 'Pos. 01.03 Gerüst fahrbar?',
+    text: 'Reicht für Pos. 01.03 ein fahrbares Gerüst oder ist ein Standgerüst gefordert?', frage: 'Reicht für Pos. 01.03 ein fahrbares Gerüst oder ist ein Standgerüst gefordert?',
+    antwort: `Ein fahrbares Arbeitsgerüst genügt. Die Arbeitshöhe beträgt bis 4,50 m, die lichte Raumhöhe im Mehrzweckraum 4,10 m.${R('LV 01.03')}${R('A-301 Schnitt B-B')}<ins id="caret">​</ins>`,
+    ctx: [['t-ki', 'LV', '01.03 Arbeitsgerüst Mehrzweckraum', 'Langtext: fahrbar, Arbeitshöhe bis 4,50 m'], ['t-grau', 'Plan', 'A-301 Schnitt B-B', 'Lichte Höhe Mehrzweckraum 4,10 m'], ['t-ok', 'Rückfrage', 'Ihre Antwort beim Erstellen', 'Gerüst im LV Trockenbau']] },
+  { id: 'm3', b: 'Schmid Innenausbau', von: 'über die Vergabeplattform', kanal: 'Plattform', d: '05.11.', zeit: '05.11., 11:02', typ: 'frage', nr: 3, betr: 'Bauabschnitte?',
+    text: 'Wird in einem Zug oder in Bauabschnitten ausgeführt? Das ist für unsere Personalplanung wichtig.', frage: 'Wird in einem Zug oder in Bauabschnitten ausgeführt?',
+    antwort: `Die Trockenbauarbeiten werden in einem Bauabschnitt ausgeführt, voraussichtlich KW 6 bis KW 14/2027.${R('Vorbemerkungen')}${R('Terminplan')}<ins id="caret">​</ins>`,
+    ctx: [['t-ki', 'LV', 'Vorbemerkungen Bauablauf', 'Ausführung in einem Abschnitt'], ['t-grau', 'Projekt', 'Terminplan Rev 3', 'Trockenbau KW 6 bis KW 14/2027']] },
+  { id: 'm4', b: 'Wagner Trockenbau', von: 'wagner@wagner-tb.de', kanal: 'Mail', d: '05.11.', zeit: '05.11., 15:20', typ: 'absage', betr: 'AW: Angebotsaufforderung',
+    text: 'Sehr geehrte Damen und Herren, vielen Dank für die Anfrage. Aus Kapazitätsgründen können wir leider kein Angebot abgeben. Mit freundlichen Grüßen, K. Wagner' },
+  { id: 'm5', b: 'Keller Ausbau GmbH', von: 'angebot@keller-ausbau.de', kanal: 'Mail', d: '13.11.', zeit: 'geplant 13.11., 08:00', typ: 'erinnerung', betr: 'Erinnerung Angebotsfrist',
+    text: 'Keine Reaktion seit dem Versand am 27.10. Der Assistent schlägt eine Erinnerung vier Tage vor Fristende vor.',
+    entwurf: 'Sehr geehrte Damen und Herren,<br><br>wir möchten Sie an unsere Angebotsaufforderung vom 27.10. für die Trockenbauarbeiten der Kita Sonnenhof erinnern. Die Angebotsfrist endet am <b>17.11.2026 um 12:00 Uhr</b>.<br><br>Mit freundlichen Grüßen<br>Architekturbüro Sonnleitner',
+    ctx: [['t-grau', 'Verlauf', 'Keller Ausbau GmbH', 'Mail am 27.10. zugestellt, nicht geöffnet'], ['t-grau', 'Frist', 'Angebotsfrist 17.11.2026, 12:00', 'Erinnerung vier Tage vorher']] },
+];
+const bi = { angekommen: 0, entwurf: {}, gesendet: {}, text: {}, sel: null, bsel: null, laeuft: false, edit: false, neuSide: false };
+const daMsgs = () => MSGS.slice(0, bi.angekommen);
+const abgesagt = (b) => daMsgs().some((m) => m.b === b && m.typ === 'absage');
+const imVerfahren = () => BIETER.map(([b]) => b).filter((b) => !abgesagt(b));
+const infosAn = (b) => abgesagt(b) ? [] : MSGS.filter((m) => m.typ === 'frage' && bi.gesendet[m.id]).map((m) => m.nr);
+function biText(m) {
+  if (m.typ === 'erinnerung') return m.entwurf;
+  return `Sehr geehrte Damen und Herren,<br><br>zu den Vergabeunterlagen wurde folgende Frage gestellt:<div class="zit">${m.frage}</div>Antwort: ${m.antwort}<br>Diese Bieterinformation wird Bestandteil der Vergabeunterlagen.<br><br>Mit freundlichen Grüßen, Architekturbüro Sonnleitner`;
+}
+function msgStatus(m) {
+  if (bi.gesendet[m.id]) return m.typ === 'frage' ? tag('t-ok', `✓ Bieterinfo Nr. ${m.nr}`) : tag('t-ok', '✓ freigegeben');
+  if (m.typ === 'absage') return tag('t-grau', '✦ Absage erkannt');
+  if (!bi.entwurf[m.id]) return '<span class="muted"><span class="spin"></span>✦ Entwurf …</span>';
+  return tag('t-ki', '✦ Entwurf bereit');
+}
+function renderBi(neu = -1, flash = []) {
+  const offen = daMsgs().filter((m) => bi.entwurf[m.id] && !bi.gesendet[m.id] && m.typ !== 'absage').length;
+  const bd = $('#bi-badge'); bd.textContent = offen; bd.style.display = offen ? '' : 'none';
+  if (!state.versendet) { $('#bcol').innerHTML = ''; $('#bside').innerHTML = ''; $('#bmid').innerHTML = '<div class="mlist"><div class="leer">Das LV ist noch nicht versendet. Danach landen hier alle Rückfragen, Absagen und Erinnerungen, jeweils mit einem Antwortentwurf.</div></div>'; return; }
+  renderBcol(flash); renderBmid(neu); renderBside();
+}
+function renderBcol(flash) {
+  const D = daMsgs();
+  $('#bcol').innerHTML = `<div class="h-sec">BIETER</div>
+    <div class="bstats"><div class="bstat"><b>6</b>angefragt</div><div class="bstat"><b>5</b>aktiv</div><div class="bstat"><b>${D.filter((m) => m.typ === 'frage').length}</b>Rückfragen</div><div class="bstat"><b>${D.filter((m) => m.typ === 'absage').length}</b>Absagen</div></div>
+    <div class="frist">Frist <b>17.11.2026, 12:00</b> · noch 12 Tage</div>` +
+    BIETER.map(([b]) => {
+      const i = BI[b], mine = D.filter((m) => m.b === b), ab = abgesagt(b);
+      const st = ab ? ['t-grau', 'abgesagt'] : b.startsWith('Keller') ? ['t-rot', 'keine Reaktion'] : ['t-ok', 'aktiv'];
+      const nrs = infosAn(b);
+      const chips = mine.filter((m) => m.typ === 'frage' && !bi.gesendet[m.id]).map(() => tag('t-ki', 'Rückfrage offen')).join('') +
+        mine.filter((m) => m.typ === 'erinnerung' && !bi.gesendet[m.id]).map(() => tag('t-gelb', 'Erinnerung vorbereitet')).join('') +
+        (nrs.length ? tag('t-ok', `✓ Bieterinfo Nr. ${nrs.join(', ')}`) : '');
+      return `<div class="brow${bi.bsel === b ? ' sel' : ''}${flash.includes(b) ? ' flash' : ''}" data-b="${b}"><div class="n">${b}${tag(st[0], st[1])}</div><div class="l">${i.kanal} · ${ab ? 'hat per Mail abgesagt' : i.l}</div><div class="cs">${chips}</div></div>`;
+    }).join('');
+  $$('#bcol .brow').forEach((r) => r.onclick = () => { if (bi.edit) return; bi.bsel = r.dataset.b; bi.sel = null; bi.neuSide = true; renderBi(); });
+}
+function renderBmid(neu) {
+  if (bi.bsel) return renderVerlauf(bi.bsel);
+  const D = daMsgs();
+  let h = `<div class="h-sec">POSTFACH <span style="font-weight:400">Mail, Bieterportal und Vergabeplattform</span></div><div class="mlist">` +
+    (D.length ? D.map((m, k) => `<div class="mrow${bi.sel === m.id ? ' sel' : ''}${k === neu ? ' neu' : ''}" data-m="${m.id}"><span class="who">${m.b}</span><span class="sub">${m.betr}</span><span class="dt">${m.kanal} · ${m.d}</span><span class="ms">${msgStatus(m)}</span></div>`).join('')
+      : '<div class="leer">Noch keine Nachrichten.</div>') + '</div>';
+  const m = MSGS.find((x) => x.id === bi.sel);
+  if (m) h += msgDetail(m);
+  $('#bmid').innerHTML = h;
+  $$('#bmid .mrow').forEach((r) => r.onclick = () => { if (bi.edit) return; bi.sel = r.dataset.m; bi.bsel = null; bi.neuSide = true; renderBi(); });
+  const ed = $('#bi-edit'), go = $('#bi-go');
+  if (ed) ed.onclick = biEdit;
+  if (go) go.onclick = () => biSenden(m);
+}
+function msgDetail(m) {
+  const kopf = `<div class="inmail"><div class="mh">${m.typ === 'erinnerung' ? '<b>✦ Hinweis des Assistenten</b>' : `<b>${m.b}</b> · ${m.von} · ${m.zeit} · per ${m.kanal === 'Plattform' ? 'Vergabeplattform (synchronisiert)' : m.kanal}`}</div>${m.text}</div>`;
+  if (m.typ === 'absage') return kopf + `<div class="inmail" style="background:#fff"><b>✦ Als Absage erkannt.</b> Wagner wird im Preisspiegel als „abgesagt“ geführt und erhält keine weiteren Bieterinformationen.</div>`;
+  if (!bi.entwurf[m.id]) return kopf + `<div class="draft"><div class="draft-h"><span class="ki"><span class="spin"></span>✦ Antwortentwurf wird geschrieben …</span></div></div>`;
+  const sent = bi.gesendet[m.id];
+  const an = m.typ === 'frage' ? `An: alle ${imVerfahren().length} Bieter (Bcc) und Vergabeplattform · Bieterinformation Nr. ${m.nr}` : `An: ${m.von} · Erinnerung Angebotsfrist`;
+  return kopf + `<div class="draft${sent ? ' sent' : ''}"><div class="draft-h"><span class="ki">${sent ? '✓ Gesendet' : '✦ Antwortentwurf'}</span><span>${an}</span></div>
+    <div class="draft-b" id="draft-b">${bi.text[m.id] || biText(m)}</div>
+    <div class="draft-f">${sent ? `<span class="muted">${m.typ === 'frage' ? 'Gesendet 05.11., 17:02' : 'Geplant für 13.11., 08:00'} · von Ihnen freigegeben</span>`
+      : `<span class="hitl">Wird erst nach Ihrer Freigabe gesendet</span><span class="sp"></span><button class="btn sm ghost">Verwerfen</button><button class="btn sm" id="bi-edit">✎ Bearbeiten</button><button class="btn sm primary" id="bi-go">Freigeben und senden</button>`}</div></div>`;
+}
+function renderVerlauf(b) {
+  const i = BI[b], ab = abgesagt(b), ev = i.ev.map(([d, t]) => [d, t, '']);
+  for (const m of daMsgs().filter((x) => x.b === b)) {
+    if (m.typ === 'frage') ev.push([m.zeit, `Rückfrage: ${m.betr}`, 'hi']);
+    if (m.typ === 'absage') ev.push([m.zeit, 'Absage per Mail (Kapazität)', '']);
+    if (m.typ === 'erinnerung') ev.push(['13.11., 08:00', bi.gesendet[m.id] ? 'Erinnerung geplant (freigegeben)' : 'Erinnerung vorbereitet · Freigabe nötig', 'hi']);
+  }
+  for (const nr of infosAn(b)) { const m = MSGS.find((x) => x.nr === nr); ev.push(['05.11., 17:02', `Bieterinformation Nr. ${nr} erhalten${m.b === b ? ' (Antwort auf die eigene Rückfrage)' : ''}`, 'ok']); }
+  ev.sort((x, y) => { const k = (s) => { const [d, mo] = s.replace(/^\D+/, '').split('.'); return Number(mo) * 100 + Number(d); }; return k(x[0]) - k(y[0]); });
+  ev.push(['17.11., 12:00', ab ? 'Angebotsfrist · kein Angebot (abgesagt)' : 'Angebotsfrist · Angebot steht noch aus', '']);
+  const offen = daMsgs().filter((m) => m.b === b && m.typ === 'frage' && !bi.gesendet[m.id]).length;
+  const fazit = ab ? 'Hat abgesagt.' : b.startsWith('Keller') ? 'Bisher keine Reaktion. Erinnerung ist vorbereitet.' : `Aktiv: ${i.l.replace(' · ', ', ')}. ${offen ? 'Eine Rückfrage ist noch offen.' : 'Keine offenen Rückfragen.'} Angebot steht noch aus.`;
+  $('#bmid').innerHTML = `<div style="display:flex;align-items:center;gap:10px"><button class="btn sm" id="bi-zur">← Postfach</button><b style="font-size:16px">${b}</b><span class="muted">${BIETER.find(([n]) => n === b)[1]} · ${i.kanal}</span></div>
+    <div class="inmail" style="background:#fff"><b>✦ Stand:</b> ${fazit}</div>
+    <div class="h-sec" style="margin-top:4px">VERLAUF</div>
+    <div class="tl">${ev.map(([d, t, c]) => `<div class="e ${c}"><span class="d">${d}</span><span>${t}</span></div>`).join('')}</div>`;
+  $('#bi-zur').onclick = () => { bi.bsel = null; renderBi(); };
+}
+function renderBside() {
+  const el = $('#bside'); el.classList.toggle('neu', bi.neuSide); bi.neuSide = false;
+  const ctx = (l) => l.map(([c, k, h, s], n) => `<div class="ctx" style="animation-delay:${n * 120}ms"><div class="h">${tag(c, k)} ${h}</div><div class="s">${s}</div></div>`).join('');
+  const ok = (l, d = 0) => l.map(([h, s], n) => `<div class="ctx ok" style="animation-delay:${(n + d) * 120}ms"><div class="h">${h}</div><div class="s">${s}</div></div>`).join('');
+  if (bi.bsel) { el.innerHTML = `<div><h4>✦ Was das Büro über den Bieter weiß</h4><div class="muted" style="font-size:12.5px">Aus früheren Ausschreibungen</div></div><div>${ctx(BI[bi.bsel].hist.map(([h, s]) => ['t-grau', 'Büro', h, s]))}</div>`; return; }
+  const m = MSGS.find((x) => x.id === bi.sel);
+  if (!m) { el.innerHTML = `<div><h4>✦ So arbeitet der Assistent</h4></div><div>${ok([['Liest jede Nachricht', 'Mail, Bieterportal und Vergabeplattform, synchronisiert'], ['Entwirft die Antwort', 'Mit dem ganzen Projekt: LV, Modell, Fachplanung, Ihre Antworten'], ['Prüft das Vergaberecht', 'Gleichbehandlung aller Bieter, keine LV-Änderung durch die Hintertür'], ['Sie geben frei', 'Nichts geht ohne Ihre Freigabe raus']])}</div>`; return; }
+  if (m.typ === 'absage') { el.innerHTML = `<div><h4>✦ Erkannt</h4></div><div>${ok([['Absage', 'Status im Verteiler und im Preisspiegel: abgesagt'], ['Keine Antwort nötig', 'Erhält keine weiteren Bieterinformationen']])}</div>`; return; }
+  if (m.typ === 'erinnerung') { el.innerHTML = `<div><h4>✦ Grundlage</h4></div><div>${ctx(m.ctx)}</div>`; return; }
+  el.innerHTML = `<div><h4>✦ Kontext der Antwort</h4><div class="muted" style="font-size:12.5px">Jede Aussage im Entwurf ist belegt</div></div><div>${ctx(m.ctx)}</div>
+    <div><h4>${tag('t-lila', 'Vergabe')} geprüft</h4>${ok([
+      ['Gleichbehandlung', `An alle ${imVerfahren().length} Bieter und auf die Vergabeplattform, ohne Namen des Fragestellers (§ 12a Abs. 4 VOB/A)`],
+      ['Unverzüglich', 'Entwurf 3 Minuten nach Eingang'],
+      ['Keine Änderung des LV', 'Reine Klarstellung']], m.ctx.length)}</div>`;
+}
+function biEdit() {
+  const d = $('#draft-b'); d.contentEditable = 'true'; d.classList.add('edit'); bi.edit = true; d.focus();
+  const c = $('#caret', d);
+  if (c) { const r = document.createRange(); r.setStart(c.firstChild, 1); r.collapse(true); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  $('#bi-edit').textContent = '✎ Bearbeiten …';
+}
+async function biSenden(m) {
+  const d = $('#draft-b'); d.contentEditable = 'false'; d.classList.remove('edit'); bi.edit = false;
+  bi.text[m.id] = d.innerHTML.replace(' id="caret"', '');
+  $('#bi-go').innerHTML = '<span class="spin" style="border-top-color:#fff"></span>Wird gesendet …'; await sleep(1000);
+  bi.gesendet[m.id] = true;
+  renderBi(-1, m.typ === 'frage' ? imVerfahren() : [m.b]);
+}
+window.posteingang = async () => {
+  bi.laeuft = true;
+  for (let k = 0; k < MSGS.length; k++) {
+    const m = MSGS[k]; bi.angekommen = k + 1; if (!bi.edit) renderBi(k);
+    if (m.typ !== 'absage') setTimeout(() => { bi.entwurf[m.id] = true; if (!bi.edit) renderBi(); }, (1300 + k * 150) * TEMPO);
+    await sleep(650);
+  }
+  await sleep(1800); bi.laeuft = false;
+};
+window.showTab = showTab;
+</script>
+</body>
+</html>

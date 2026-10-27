@@ -1,0 +1,7 @@
+{
+  "name": "lv-ki-demo-aufnahme",
+  "private": true,
+  "type": "module",
+  "scripts": { "aufnahme": "node 19-demo-lv-ki.mjs", "kontrollbilder": "SHOTS=../bilder-neu node 19-demo-lv-ki.mjs" },
+  "dependencies": { "playwright": "1.64.1" }
+}
