@@ -283,7 +283,7 @@ p { margin: 0; }
   background-image: var(--raster); background-size: var(--raster-gr);
   border-block: 1px solid var(--rule-2);
 }
-.fluss-buehne { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 68px); height: calc(100vh - 68px); height: calc(100svh - 68px); display: grid; place-items: center; padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.fluss-buehne { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 68px); height: calc(100vh - 68px); height: calc(100svh - 68px); display: grid; grid-template-rows: minmax(0, 1fr); place-items: center; padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .fluss-buehne::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 40%, var(--sheet) 100%); }
 .fluss-svg { position: relative; width: 100%; height: 100%; max-width: 1320px; overflow: visible; }
 .fluss-svg.hoch { display: none; }
