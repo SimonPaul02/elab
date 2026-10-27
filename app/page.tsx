@@ -10,8 +10,8 @@ const DS_ICON = [ICON.server, ICON.noTrain, ICON.key, ICON.lock];
 type Item = (typeof KATEGORIEN)[number]['items'][number];
 function Kachel({ i, tint, klein = false }: { i: Item; tint: string; klein?: boolean }) {
   return (
-    <div className={`kachel${klein ? ' klein' : ''}`} data-tint={tint}>
-      <span className="kachel-ico">{i.logo ? <img src={i.logo} alt="" width={22} height={22} /> : <GlyphIcon g={i.glyph} />}</span>
+    <div className={`kachel${klein ? ' klein' : ''}${i.logo ? ' mit-logo' : ''}`} data-tint={tint}>
+      <span className="kachel-ico">{i.logo ? <img src={i.logo} alt="" height={24} /> : <GlyphIcon g={i.glyph} />}</span>
       <b>{i.name}</b>
     </div>
   );

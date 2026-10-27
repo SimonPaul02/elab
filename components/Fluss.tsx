@@ -121,7 +121,7 @@ const HOCH: Layout = {
   tags: [['Dach · 168 m²', 190, 268], ['12 Fenster', 16, 340], ['W1 · 412,5 m²', 286, 352], ['D1 · 520 m²', 60, 500]],
   rows: { x: 16, y0: 262, step: 28, kopf: 20, w: 388, oz: 10, txt: 52, menge: 376 },
   summe: [16, 718], badges: false,
-  box: [0, 240, 0.75],
+  box: [16, 205, 0.70],
 };
 
 
