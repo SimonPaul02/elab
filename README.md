@@ -39,7 +39,6 @@ vorliegt; ohne Freigabe die Zeile in `lib/content.ts` einfach ohne `logo` lassen
 
 ## Vor dem Livegang
 
-- `KONTAKT_EMAIL` in `lib/content.ts` prüfen (Platzhalter `hallo@plua.ai`).
 - Integrationen und Datenschutz-Aussagen mit dem tatsächlichen Stand abgleichen. Die Fußnote im Abschnitt
   Integrationen sagt bereits, dass einige Anbindungen in Entwicklung sind.
 - Impressum (`/impressum/`) und Datenschutzerklärung (`/datenschutzerklaerung/`) stehen. Beide Texte vor dem
@@ -50,5 +49,3 @@ vorliegt; ohne Freigabe die Zeile in `lib/content.ts` einfach ohne `logo` lassen
   vom eigenen Server ausgeliefert — der Abschnitt „Schriftarten“ in der Datenschutzerklärung entfällt dann.
 - Prüfen, ob mit Vercel ein Auftragsverarbeitungsvertrag nach Art. 28 DSGVO geschlossen ist. Die
   Datenschutzerklärung setzt das voraus.
-- **Widerspruch bei der Kontaktadresse klären:** im Impressum steht `mail@plua.ai`, `KONTAKT_EMAIL` in
-  `lib/content.ts` ist dagegen `hallo@plua.ai` und damit auch der Knopf „Pilot anfragen“.

@@ -2,7 +2,7 @@
 // Logos: Liegt unter public/logos/<id>.svg (oder .png) ein freigegebenes Logo, trägt man es bei `logo` ein,
 // z. B. logo: '/logos/orca.svg'. Ohne Logo zeigt die Kachel ein neutrales Symbol der Kategorie.
 
-export const KONTAKT_EMAIL = 'hallo@plua.ai'; // vor dem Livegang prüfen
+export const KONTAKT_EMAIL = 'mail@plua.ai'; // gleiche Adresse wie im Impressum
 
 export type Glyph = 'ava' | 'bim' | 'cad' | 'format' | 'norm' | 'vergabe' | 'mail' | 'cloud' | 'platform' | 'sheet' | 'chat';
 
