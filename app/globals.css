@@ -391,18 +391,14 @@ p { margin: 0; }
 
 /* Pilot */
 .pilot { background: var(--sheet); border-block: 1px solid var(--rule-2); padding-block: clamp(72px, 9vw, 112px); }
-.pilot-in { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 48px; align-items: end; }
-.pilot-in > div:first-child { display: grid; gap: 16px; }
-.termin { margin-top: clamp(48px, 6vw, 76px); display: grid; gap: 10px; }
-.termin h3 { font-family: var(--f-display); font-stretch: 112%; font-weight: 700; font-size: clamp(1.4rem, 2.6vw, 2rem); line-height: 1.1; letter-spacing: -0.022em; }
-.buchung { margin-top: 22px; }
+.pilot-kopf { display: grid; gap: 14px; max-width: 760px; justify-items: start; }
+.pilot-lead { color: var(--ink-2); font-size: 16px; }
+.pilot-lead a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--rule); }
+.pilot-lead a:hover { text-decoration-color: currentColor; }
+.buchung { margin-top: clamp(28px, 4vw, 44px); }
 .buchung-rahmen { min-height: 620px; border: 1px solid var(--rule); border-radius: 12px; background: var(--sheet); }
-.buchung-platz { border: 1px solid var(--rule); border-radius: 12px; background: var(--sheet); padding: clamp(28px, 4vw, 44px); display: grid; gap: 18px; justify-items: start; }
 .buchung-text { color: var(--ink-2); font-size: 15px; max-width: 54ch; }
-.buchung-knoepfe { display: flex; flex-wrap: wrap; gap: 12px; }
-.pilot-kontakt { display: grid; gap: 14px; justify-items: start; color: var(--ink-2); font-size: 15px; }
 .auswahl { user-select: all; color: var(--ink); }
-@media (max-width: 860px) { .pilot-in { grid-template-columns: minmax(0, 1fr); } }
 
 /* Fuß */
 /* Rechtstexte: Impressum, spaeter Datenschutzerklaerung */

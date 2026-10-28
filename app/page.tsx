@@ -92,20 +92,16 @@ export default function Home() {
 
         {/* Pilot */}
         <section className="pilot" id="pilot">
-          <div className="wrap pilot-in">
-            <div>
-              <p className="eyebrow">Pilotphase 2026</p>
-              <h2>Testen Sie plua ai an einem echten Projekt.</h2>
-            </div>
-            <div className="pilot-kontakt">
-              <a className="btn btn-akzent btn-gross" href={`mailto:${KONTAKT_EMAIL}?subject=Pilot%20plua%20ai`}>Pilot anfragen <Icon d={ICON.arrow} size={16} /></a>
-              <p><span className="mono auswahl">{KONTAKT_EMAIL}</span></p>
-            </div>
+          <div className="wrap pilot-kopf">
+            <p className="eyebrow">Pilotphase 2026</p>
+            <h2>Testen Sie plua ai an einem echten Projekt.</h2>
+            <p className="pilot-lead">Wählen Sie unten einen Termin — oder schreiben Sie uns, wir melden uns.</p>
+            <a className="btn btn-linie" href={`mailto:${KONTAKT_EMAIL}?subject=Pilot%20plua%20ai`}>
+              Per E-Mail anfragen <Icon d={ICON.arrow} size={16} />
+            </a>
           </div>
 
-          <div className="wrap termin" id="termin">
-            <p className="eyebrow">Termin</p>
-            <h3>Oder gleich einen Termin wählen.</h3>
+          <div className="wrap" id="termin">
             <Buchung />
           </div>
         </section>
