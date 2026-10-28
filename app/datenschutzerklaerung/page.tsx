@@ -1,5 +1,5 @@
-// Datenschutzerklärung nach Art. 13 DSGVO. Bewusst knapp: Die Seite bindet keine Analyse ein,
-// hat kein Formular, und ein Cookie entsteht nur, wenn jemand den Buchungskalender anfordert.
+// Datenschutzerklärung nach Art. 13 DSGVO. Bewusst knapp: Die Seite bindet keine Analyse ein und
+// hat kein Formular; das einzige Cookie bringt der eingebundene Buchungskalender mit.
 // Was hier steht, muss dem entsprechen, was die Seite tatsächlich tut - bei Änderungen an
 // eingebundenen Diensten mit anpassen.
 import type { Metadata } from 'next';
@@ -21,8 +21,8 @@ export default function Datenschutzerklaerung() {
               <p className="eyebrow">Rechtliches</p>
               <h2>Datenschutzerklärung</h2>
               <p className="abschnitt-lead">
-                Diese Website bindet keine Analyse- oder Tracking-Dienste ein und erstellt keine Nutzungsprofile. Cookies
-                setzt sie nur, wenn Sie den Buchungskalender ausdrücklich laden. Nachfolgend, welche Daten beim Aufruf
+                Diese Website bindet keine Analyse- oder Tracking-Dienste ein und erstellt keine Nutzungsprofile. Ein
+                Cookie entsteht allein durch den eingebundenen Buchungskalender. Nachfolgend, welche Daten beim Aufruf
                 anfallen und welche Rechte Sie haben.
               </p>
             </div>
@@ -96,32 +96,35 @@ export default function Datenschutzerklaerung() {
               <section>
                 <h3>Terminbuchung (Cal.com)</h3>
                 <p>
-                  Auf der Startseite können Sie einen Termin buchen. Der Kalender stammt von der Cal.com, Inc. (USA)
-                  und wird <strong>erst geladen, wenn Sie ihn mit dem Knopf „Kalender laden“ ausdrücklich anfordern</strong>.
-                  Solange Sie das nicht tun, wird keine Verbindung zu Cal.com aufgebaut.
+                  Auf der Startseite ist ein Buchungskalender der Cal.com, Inc. (USA) eingebunden, über den Sie direkt
+                  einen Termin wählen können. Der Kalender wird beim Aufruf der Startseite geladen. Dabei erhält
+                  Cal.com Ihre IP-Adresse und setzt ein Cookie zur Angriffs- und Bot-Erkennung
+                  (<span className="mono">__cf_bm</span>). Der Kalender lädt zusätzlich Inhalte von Google-Servern
+                  sowie einen Dienst zur Fehlererfassung (Sentry, USA).
                 </p>
                 <p>
-                  Nach dem Laden erhält Cal.com Ihre IP-Adresse und setzt ein Cookie zur Angriffserkennung
-                  (<span className="mono">__cf_bm</span>). Der Kalender lädt dabei zusätzlich Inhalte von
-                  Google-Servern sowie einen Dienst zur Fehlererfassung (Sentry, USA). Buchen Sie einen Termin,
-                  verarbeitet Cal.com die von Ihnen angegebenen Daten, um den Termin einzustellen.
+                  Rechtsgrundlage für das Einbinden des Kalenders ist Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes
+                  Interesse liegt darin, eine Terminvereinbarung ohne Umweg anzubieten. Das genannte Cookie dient der
+                  Sicherheit und ist für die Bereitstellung des von Ihnen aufgerufenen Dienstes erforderlich
+                  (§ 25 Abs. 2 Nr. 2 TDDG). Mit der Übermittlung in die USA ist zu rechnen; sie stützt sich auf die
+                  Standardvertragsklauseln der Europäischen Kommission beziehungsweise das EU-US Data Privacy
+                  Framework.
                 </p>
                 <p>
-                  Rechtsgrundlage für das Laden und das Cookie ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO
-                  und § 25 Abs. 1 TDDG, die Sie mit dem Klick auf den Knopf erteilen. Sie können sie jederzeit
-                  widerrufen, indem Sie die Seite neu laden und den Kalender nicht erneut anfordern. Für die
-                  Terminvereinbarung selbst gilt Art. 6 Abs. 1 lit. b DSGVO. Weitere Angaben unter{' '}
+                  Buchen Sie einen Termin, verarbeitet Cal.com die von Ihnen angegebenen Daten, um den Termin
+                  einzustellen; Rechtsgrundlage ist insoweit Art. 6 Abs. 1 lit. b DSGVO. Sie können der Einbindung
+                  nach Art. 21 DSGVO widersprechen und einen Termin stattdessen per E-Mail vereinbaren. Weitere
+                  Angaben unter{' '}
                   <a href="https://cal.com/privacy" target="_blank" rel="noopener noreferrer">cal.com/privacy</a>.
                 </p>
               </section>
 
               <section>
-                <h3>Keine Cookies, keine Analyse</h3>
+                <h3>Keine Analyse, kein Tracking</h3>
                 <p>
-                  Abgesehen von dem Cookie, das der oben genannte Kalender nach Ihrer ausdrücklichen Anforderung
-                  setzt, speichert diese Website keine Cookies. Sie nutzt weder Webanalyse noch Tracking,
-                  Werbenetzwerke oder Social-Media-Plugins. Das eingebundene Demo-Video wird von unserem eigenen
-                  Server ausgeliefert, nicht über einen Videodienst.
+                  Abgesehen von dem Sicherheits-Cookie des oben genannten Kalenders speichert diese Website keine
+                  Cookies. Sie nutzt weder Webanalyse noch Tracking, Werbenetzwerke oder Social-Media-Plugins. Das
+                  eingebundene Demo-Video wird von unserem eigenen Server ausgeliefert, nicht über einen Videodienst.
                 </p>
               </section>
 

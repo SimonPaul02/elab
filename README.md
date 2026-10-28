@@ -21,7 +21,7 @@ npm run build    # fertige Seite in ./out (auf jeden Webspace, Vercel, Netlify)
 | `public/demo.mp4` | Demo-Video (1440 × 900, 2:49) mit Standbild `demo-poster.webp` |
 | `app/impressum/page.tsx` | Impressum (eigene Seite unter `/impressum/`), Pflichtangaben nach § 5 DDG |
 | `app/datenschutzerklaerung/page.tsx` | Datenschutzerklärung unter `/datenschutzerklaerung/`, Pflichtangaben nach Art. 13 DSGVO |
-| `components/Buchung.tsx` | Buchungskalender von Cal.com (`plua-ai/intro`). Laedt bewusst erst auf Klick: das Embed zieht sonst Sentry und Google-Inhalte nach und setzt ein Cookie |
+| `components/Buchung.tsx` | Buchungskalender von Cal.com (`plua-ai/intro`), inline und beim Seitenaufruf geladen. Das Embed zieht dabei Sentry und Google-Inhalte nach und setzt das Cookie `__cf_bm` — steht so in der Datenschutzerklärung |
 | `components/Rahmen.tsx` | Kopf und Fuß, von Startseite und Impressum gemeinsam genutzt |
 | `demo-video/` | Alles zum Demo-Video: klickbarer Prototyp, Playwright-Aufnahme, Master und frühere Fassungen. Eigener README darin. Per `.vercelignore` vom Deploy ausgenommen |
 

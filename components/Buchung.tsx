@@ -1,12 +1,13 @@
 'use client';
-// Buchungskalender von Cal.com, bewusst erst auf Klick geladen.
+// Buchungskalender von Cal.com, inline eingebettet und direkt beim Seitenaufruf geladen.
+// Das offizielle Snippet holt embed.js von app.cal.com und haengt den Kalender als iframe in den
+// Container. `theme: auto` laesst das Widget der Systemeinstellung folgen, genau wie die uebrige
+// Seite. Ohne JavaScript bleibt der Link im <noscript>.
 //
-// Warum nicht direkt: Das Embed holt nicht nur app.cal.com, sondern auch
-// lh3.googleusercontent.com und o574544.ingest.us.sentry.io (Fehlertracking, USA) und setzt ein
-// Cookie (.cal.com __cf_bm). Ohne Klick waere das eine Einwilligung nach § 25 TDDG - und der Satz
-// „Diese Website speichert keine Cookies“ in der Datenschutzerklaerung waere falsch. Wer nicht
-// bucht, laedt so gar nichts von Cal.com. Der Link daneben fuehrt ohnehin direkt zu Cal.com.
-import { useEffect, useRef, useState } from 'react';
+// Das Embed laedt dabei auch lh3.googleusercontent.com und o574544.ingest.us.sentry.io
+// (Fehlertracking, USA) und setzt das Cookie .cal.com __cf_bm. Das steht so im Abschnitt
+// „Terminbuchung“ der Datenschutzerklaerung - bei Aenderungen hier dort mitziehen.
+import { useEffect, useRef } from 'react';
 
 export const CAL_LINK = 'plua-ai/intro';
 const NS = 'intro';
@@ -15,11 +16,10 @@ const ZIEL = 'cal-buchung';
 type CalFn = ((...args: unknown[]) => void) & { loaded?: boolean; ns?: Record<string, CalFn>; q?: unknown[] };
 
 export default function Buchung() {
-  const [laden, setLaden] = useState(false);
   const gestartet = useRef(false);
 
   useEffect(() => {
-    if (!laden || gestartet.current) return;
+    if (gestartet.current) return; // React ruft Effekte in der Entwicklung doppelt auf
     gestartet.current = true;
 
     const w = window as unknown as { Cal?: CalFn; document: Document };
@@ -59,21 +59,17 @@ export default function Buchung() {
       calLink: CAL_LINK,
     });
     Cal.ns![NS]('ui', { hideEventTypeDetails: false, layout: 'month_view', theme: 'auto' });
-  }, [laden]);
-
-  if (laden) return <div className="buchung"><div id={ZIEL} className="buchung-rahmen" /></div>;
+  }, []);
 
   return (
     <div className="buchung">
-      <div className="buchung-platz">
+      <div id={ZIEL} className="buchung-rahmen" />
+      <noscript>
         <p className="buchung-text">
-          Der Kalender wird von Cal.com geladen. Dabei erhält Cal.com Ihre IP-Adresse und setzt ein Cookie.
+          Für den Kalender wird JavaScript benötigt.{' '}
+          <a href={`https://cal.com/${CAL_LINK}`} target="_blank" rel="noreferrer">Termin direkt bei Cal.com buchen</a>.
         </p>
-        <div className="buchung-knoepfe">
-          <button type="button" className="btn btn-akzent" onClick={() => setLaden(true)}>Kalender laden</button>
-          <a className="btn btn-linie" href={`https://cal.com/${CAL_LINK}`} target="_blank" rel="noreferrer">Bei Cal.com öffnen</a>
-        </div>
-      </div>
+      </noscript>
     </div>
   );
 }
