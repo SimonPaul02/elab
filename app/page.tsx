@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 import { ALLE_INTEGRATIONEN, DATENSCHUTZ, KATEGORIEN, KONTAKT_EMAIL } from '../lib/content';
-import { GlyphIcon, Icon, ICON, Logo } from '../components/Icons';
+import { GlyphIcon, Icon, ICON } from '../components/Icons';
 import Fluss from '../components/Fluss';
 import FlussScroll from '../components/FlussScroll';
 import Grundriss from '../components/Grundriss';
+import { Kopf, Fuss } from '../components/Rahmen';
 
 const DS_ICON = [ICON.server, ICON.noTrain, ICON.key, ICON.lock];
 
@@ -22,15 +23,7 @@ export default function Home() {
   const reihe2 = ALLE_INTEGRATIONEN.filter((_, k) => k % 2 === 1);
   return (
     <>
-      <header className="kopf">
-        <div className="wrap kopf-in">
-          <a href="#top" className="kopf-logo"><Logo /></a>
-          <nav className="kopf-nav" aria-label="Seitenbereiche">
-            <a href="#fluss">So funktioniert es</a><a href="#datenschutz">Datenschutz</a>
-          </nav>
-          <a className="btn btn-dunkel" href="#pilot">Pilot anfragen</a>
-        </div>
-      </header>
+      <Kopf heim />
 
       <main id="top">
         {/* Hero als Planblatt: Raster, Grundriss, Maßkette */}
@@ -111,13 +104,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="fuss">
-        <div className="wrap fuss-in">
-          <Logo />
-          <p>Demo mit Beispielwerten. Genannte Marken gehören ihren Inhabern.</p>
-          <p className="mono">© 2026 plua ai</p>
-        </div>
-      </footer>
+      <Fuss />
     </>
   );
 }

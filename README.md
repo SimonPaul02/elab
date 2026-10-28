@@ -19,6 +19,8 @@ npm run build    # fertige Seite in ./out (auf jeden Webspace, Vercel, Netlify)
 | `lib/content.ts` | Alle Texte, Integrationen, Ablauf, Prüfprotokoll, Datenschutz, Kontaktadresse |
 | `components/Icons.tsx` | Logo plua ai und neutrale Symbole je Kategorie |
 | `public/demo.mp4` | Demo-Video (1440 × 900, 2:49) mit Standbild `demo-poster.webp` |
+| `app/impressum/page.tsx` | Impressum (eigene Seite unter `/impressum/`), Pflichtangaben nach § 5 DDG |
+| `components/Rahmen.tsx` | Kopf und Fuß, von Startseite und Impressum gemeinsam genutzt |
 | `demo-video/` | Alles zum Demo-Video: klickbarer Prototyp, Playwright-Aufnahme, Master und frühere Fassungen. Eigener README darin. Per `.vercelignore` vom Deploy ausgenommen |
 
 ## Logos der Integrationen
@@ -39,4 +41,6 @@ vorliegt; ohne Freigabe die Zeile in `lib/content.ts` einfach ohne `logo` lassen
 - `KONTAKT_EMAIL` in `lib/content.ts` prüfen (Platzhalter `hallo@plua.ai`).
 - Integrationen und Datenschutz-Aussagen mit dem tatsächlichen Stand abgleichen. Die Fußnote im Abschnitt
   Integrationen sagt bereits, dass einige Anbindungen in Entwicklung sind.
-- Impressum und Datenschutzerklärung ergänzen (Pflicht für eine deutsche Website).
+- Datenschutzerklärung ergänzen (Pflicht für eine deutsche Website). Das Impressum steht unter `/impressum/`.
+- **Widerspruch bei der Kontaktadresse klären:** im Impressum steht `mail@plua.ai`, `KONTAKT_EMAIL` in
+  `lib/content.ts` ist dagegen `hallo@plua.ai` und damit auch der Knopf „Pilot anfragen“.
