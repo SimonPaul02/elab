@@ -1,12 +1,13 @@
-// Datenschutzerklärung nach Art. 13 DSGVO. Bewusst knapp: Die Seite setzt keine Cookies,
-// bindet keine Analyse ein und hat kein Formular. Was hier steht, muss dem entsprechen, was
-// die Seite tatsächlich tut - bei Änderungen an eingebundenen Diensten mit anpassen.
+// Datenschutzerklärung nach Art. 13 DSGVO. Bewusst knapp: Die Seite bindet keine Analyse ein,
+// hat kein Formular, und ein Cookie entsteht nur, wenn jemand den Buchungskalender anfordert.
+// Was hier steht, muss dem entsprechen, was die Seite tatsächlich tut - bei Änderungen an
+// eingebundenen Diensten mit anpassen.
 import type { Metadata } from 'next';
 import { Kopf, Fuss } from '../../components/Rahmen';
 
 export const metadata: Metadata = {
   title: 'Datenschutzerklärung · plua ai',
-  description: 'Wie plua.ai mit personenbezogenen Daten umgeht: Server-Logfiles, Hosting, Schriftarten, Ihre Rechte nach DSGVO.',
+  description: 'Wie plua.ai mit personenbezogenen Daten umgeht: Server-Logfiles, Hosting, Schriftarten, Terminbuchung, Ihre Rechte nach DSGVO.',
 };
 
 export default function Datenschutzerklaerung() {
@@ -20,8 +21,9 @@ export default function Datenschutzerklaerung() {
               <p className="eyebrow">Rechtliches</p>
               <h2>Datenschutzerklärung</h2>
               <p className="abschnitt-lead">
-                Diese Website setzt keine Cookies, bindet keine Analyse- oder Tracking-Dienste ein und erstellt keine
-                Nutzungsprofile. Nachfolgend, welche Daten beim Aufruf dennoch anfallen und welche Rechte Sie haben.
+                Diese Website bindet keine Analyse- oder Tracking-Dienste ein und erstellt keine Nutzungsprofile. Cookies
+                setzt sie nur, wenn Sie den Buchungskalender ausdrücklich laden. Nachfolgend, welche Daten beim Aufruf
+                anfallen und welche Rechte Sie haben.
               </p>
             </div>
 
@@ -92,11 +94,34 @@ export default function Datenschutzerklaerung() {
               </section>
 
               <section>
+                <h3>Terminbuchung (Cal.com)</h3>
+                <p>
+                  Auf der Startseite können Sie einen Termin buchen. Der Kalender stammt von der Cal.com, Inc. (USA)
+                  und wird <strong>erst geladen, wenn Sie ihn mit dem Knopf „Kalender laden“ ausdrücklich anfordern</strong>.
+                  Solange Sie das nicht tun, wird keine Verbindung zu Cal.com aufgebaut.
+                </p>
+                <p>
+                  Nach dem Laden erhält Cal.com Ihre IP-Adresse und setzt ein Cookie zur Angriffserkennung
+                  (<span className="mono">__cf_bm</span>). Der Kalender lädt dabei zusätzlich Inhalte von
+                  Google-Servern sowie einen Dienst zur Fehlererfassung (Sentry, USA). Buchen Sie einen Termin,
+                  verarbeitet Cal.com die von Ihnen angegebenen Daten, um den Termin einzustellen.
+                </p>
+                <p>
+                  Rechtsgrundlage für das Laden und das Cookie ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO
+                  und § 25 Abs. 1 TDDG, die Sie mit dem Klick auf den Knopf erteilen. Sie können sie jederzeit
+                  widerrufen, indem Sie die Seite neu laden und den Kalender nicht erneut anfordern. Für die
+                  Terminvereinbarung selbst gilt Art. 6 Abs. 1 lit. b DSGVO. Weitere Angaben unter{' '}
+                  <a href="https://cal.com/privacy" target="_blank" rel="noopener noreferrer">cal.com/privacy</a>.
+                </p>
+              </section>
+
+              <section>
                 <h3>Keine Cookies, keine Analyse</h3>
                 <p>
-                  Diese Website speichert keine Cookies und nutzt weder Webanalyse noch Tracking, Werbenetzwerke oder
-                  Social-Media-Plugins. Das eingebundene Demo-Video wird von unserem eigenen Server ausgeliefert, nicht
-                  über einen Videodienst.
+                  Abgesehen von dem Cookie, das der oben genannte Kalender nach Ihrer ausdrücklichen Anforderung
+                  setzt, speichert diese Website keine Cookies. Sie nutzt weder Webanalyse noch Tracking,
+                  Werbenetzwerke oder Social-Media-Plugins. Das eingebundene Demo-Video wird von unserem eigenen
+                  Server ausgeliefert, nicht über einen Videodienst.
                 </p>
               </section>
 

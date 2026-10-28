@@ -5,6 +5,7 @@ import Fluss from '../components/Fluss';
 import FlussScroll from '../components/FlussScroll';
 import Grundriss from '../components/Grundriss';
 import { Kopf, Fuss } from '../components/Rahmen';
+import Buchung from '../components/Buchung';
 
 const DS_ICON = [ICON.server, ICON.noTrain, ICON.key, ICON.lock];
 
@@ -100,6 +101,12 @@ export default function Home() {
               <a className="btn btn-akzent btn-gross" href={`mailto:${KONTAKT_EMAIL}?subject=Pilot%20plua%20ai`}>Pilot anfragen <Icon d={ICON.arrow} size={16} /></a>
               <p><span className="mono auswahl">{KONTAKT_EMAIL}</span></p>
             </div>
+          </div>
+
+          <div className="wrap termin" id="termin">
+            <p className="eyebrow">Termin</p>
+            <h3>Oder gleich einen Termin wählen.</h3>
+            <Buchung />
           </div>
         </section>
       </main>
