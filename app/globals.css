@@ -409,6 +409,7 @@ p { margin: 0; }
 .fuss { padding-block: 40px 56px; }
 .fuss-in { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; }
 .fuss-in p { color: var(--ink-3); font-size: 13.5px; max-width: 70ch; }
+.fuss-nav { display: flex; flex-wrap: wrap; gap: 8px 20px; }
 .fuss-nav a { color: var(--ink-2); font-size: 13.5px; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--rule); }
 .fuss-nav a:hover { color: var(--ink); text-decoration-color: currentColor; }
 .fuss-in p.mono { margin-left: auto; font-size: 12.5px; }

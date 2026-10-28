@@ -20,6 +20,7 @@ npm run build    # fertige Seite in ./out (auf jeden Webspace, Vercel, Netlify)
 | `components/Icons.tsx` | Logo plua ai und neutrale Symbole je Kategorie |
 | `public/demo.mp4` | Demo-Video (1440 × 900, 2:49) mit Standbild `demo-poster.webp` |
 | `app/impressum/page.tsx` | Impressum (eigene Seite unter `/impressum/`), Pflichtangaben nach § 5 DDG |
+| `app/datenschutzerklaerung/page.tsx` | Datenschutzerklärung unter `/datenschutzerklaerung/`, Pflichtangaben nach Art. 13 DSGVO |
 | `components/Rahmen.tsx` | Kopf und Fuß, von Startseite und Impressum gemeinsam genutzt |
 | `demo-video/` | Alles zum Demo-Video: klickbarer Prototyp, Playwright-Aufnahme, Master und frühere Fassungen. Eigener README darin. Per `.vercelignore` vom Deploy ausgenommen |
 
@@ -41,6 +42,13 @@ vorliegt; ohne Freigabe die Zeile in `lib/content.ts` einfach ohne `logo` lassen
 - `KONTAKT_EMAIL` in `lib/content.ts` prüfen (Platzhalter `hallo@plua.ai`).
 - Integrationen und Datenschutz-Aussagen mit dem tatsächlichen Stand abgleichen. Die Fußnote im Abschnitt
   Integrationen sagt bereits, dass einige Anbindungen in Entwicklung sind.
-- Datenschutzerklärung ergänzen (Pflicht für eine deutsche Website). Das Impressum steht unter `/impressum/`.
+- Impressum (`/impressum/`) und Datenschutzerklärung (`/datenschutzerklaerung/`) stehen. Beide Texte vor dem
+  Livegang anwaltlich prüfen lassen — sie sind nach bestem Wissen verfasst, aber keine Rechtsberatung.
+- **Google Fonts selbst ausliefern.** `app/layout.tsx` lädt die Schriften von `fonts.googleapis.com` und
+  `fonts.gstatic.com`; dabei geht die IP-Adresse jedes Besuchers an Google. Das LG München I hat dafür 2022
+  Schadensersatz zugesprochen (3 O 17493/20). Mit `next/font/google` werden die Dateien beim Build geholt und
+  vom eigenen Server ausgeliefert — der Abschnitt „Schriftarten“ in der Datenschutzerklärung entfällt dann.
+- Prüfen, ob mit Vercel ein Auftragsverarbeitungsvertrag nach Art. 28 DSGVO geschlossen ist. Die
+  Datenschutzerklärung setzt das voraus.
 - **Widerspruch bei der Kontaktadresse klären:** im Impressum steht `mail@plua.ai`, `KONTAKT_EMAIL` in
   `lib/content.ts` ist dagegen `hallo@plua.ai` und damit auch der Knopf „Pilot anfragen“.

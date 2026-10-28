@@ -23,8 +23,11 @@ export function Fuss() {
     <footer className="fuss">
       <div className="wrap fuss-in">
         <Logo />
-        <p>Demo mit Beispielwerten. Genannte Marken gehören ihren Inhabern.</p>
-        <nav className="fuss-nav" aria-label="Rechtliches"><a href="/impressum/">Impressum</a></nav>
+        <p>Genannte Marken gehören ihren Inhabern.</p>
+        <nav className="fuss-nav" aria-label="Rechtliches">
+          <a href="/impressum/">Impressum</a>
+          <a href="/datenschutzerklaerung/">Datenschutzerklärung</a>
+        </nav>
         <p className="mono">© 2026 plua ai</p>
       </div>
     </footer>
