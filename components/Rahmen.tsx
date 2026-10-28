@@ -10,7 +10,7 @@ export function Kopf({ heim = false }: { heim?: boolean }) {
       <div className="wrap kopf-in">
         <a href={heim ? '#top' : '/'} className="kopf-logo"><Logo /></a>
         <nav className="kopf-nav" aria-label="Seitenbereiche">
-          <a href={an('fluss')}>So funktioniert es</a><a href={an('datenschutz')}>Datenschutz</a>
+          <a href={an('fluss')}>So funktioniert es</a>
         </nav>
         <a className="btn btn-dunkel" href={an('pilot')}>Pilot anfragen</a>
       </div>
