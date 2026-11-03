@@ -48,7 +48,7 @@ export default function Home() {
               </div>
 
               <figure className="demo" id="demo">
-                <div className="demo-leiste"><span className="dots" aria-hidden="true"><i /><i /><i /></span><span>Demo · 2:49</span><span className="demo-hinweis">Prototyp, Beispielwerte</span></div>
+                <div className="demo-leiste"><span className="dots" aria-hidden="true"><i /><i /><i /></span><span>Demo · 1:21</span><span className="demo-hinweis">Prototyp, Beispielwerte</span></div>
                 <video src="/demo.mp4" poster="/demo-poster.webp" controls autoPlay muted loop playsInline preload="metadata" />
               </figure>
             </div>
