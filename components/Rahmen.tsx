@@ -1,18 +1,25 @@
-// Kopf und Fuß teilen sich Startseite und Impressum, damit beide nicht auseinanderlaufen.
-// `heim` steuert die Sprungziele: auf der Startseite reine Anker, sonst mit führendem /
-// zurück auf die Startseite.
+// Kopf und Fuß teilen sich alle Seiten, damit sie nicht auseinanderlaufen.
+// `aktiv` markiert die Seite in der Navigation. `termin` sagt, ob die Seite selbst den Pilot-Abschnitt
+// mit dem Buchungskalender hat: dann springt „Pilot anfragen“ dorthin, sonst auf die Startseite.
 import { Logo } from './Icons';
 
-export function Kopf({ heim = false }: { heim?: boolean }) {
-  const an = (id: string) => (heim ? `#${id}` : `/#${id}`);
+type Seite = 'start' | 'planer' | 'bau';
+
+export function Kopf({ aktiv, termin = false }: { aktiv?: Seite; termin?: boolean }) {
+  const nav: [Seite, string, string][] = [
+    ['planer', '/planer/', 'Für Planer'],
+    ['bau', '/bauunternehmen/', 'Für Bauunternehmen'],
+  ];
   return (
     <header className="kopf">
       <div className="wrap kopf-in">
-        <a href={heim ? '#top' : '/'} className="kopf-logo"><Logo /></a>
-        <nav className="kopf-nav" aria-label="Seitenbereiche">
-          <a href={an('fluss')}>So funktioniert es</a>
+        <a href={aktiv === 'start' ? '#top' : '/'} className="kopf-logo"><Logo /></a>
+        <nav className="kopf-nav" aria-label="Seiten">
+          {nav.map(([id, href, text]) => (
+            <a key={id} href={href} aria-current={aktiv === id ? 'page' : undefined}>{text}</a>
+          ))}
         </nav>
-        <a className="btn btn-dunkel" href={an('termin')}>Pilot anfragen</a>
+        <a className="btn btn-dunkel" href={termin ? '#termin' : '/#termin'}>Pilot anfragen</a>
       </div>
     </header>
   );

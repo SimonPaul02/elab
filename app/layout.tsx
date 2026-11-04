@@ -3,8 +3,8 @@ import type { ReactNode } from 'react';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'plua ai · LV und Vergabe mit KI',
-  description: 'plua ai erstellt Leistungsverzeichnisse aus Ihrem IFC-Modell und Ihren Plänen, prüft gegen VOB/C und Vergaberecht und begleitet die Vergabe bis zum Preisspiegel.',
+  title: 'plua ai · Vom Plan zur Menge',
+  description: 'plua ai ermittelt vollautomatisch und vollständig alle Mengen, die sich aus Plänen ableiten lassen, VOB-konform und prüfbar. Jeder Wert ist im Plan belegt.',
 };
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover' };

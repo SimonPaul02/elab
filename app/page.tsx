@@ -1,110 +1,55 @@
-/* eslint-disable @next/next/no-img-element */
-import { ALLE_INTEGRATIONEN, DATENSCHUTZ, KATEGORIEN, KONTAKT_EMAIL } from '../lib/content';
-import { GlyphIcon, Icon, ICON } from '../components/Icons';
-import Fluss from '../components/Fluss';
-import FlussScroll from '../components/FlussScroll';
+// Startseite: kurz und allgemein. Kern (Vom Plan zur Menge), ein Beispiel, zwei Einstiege, Pilot.
+// Der frühere Inhalt der Startseite (Ablauf bis zum Preisspiegel) steht unter /planer/.
+import { EINSTIEGE, KERN } from '../lib/content';
+import { Icon, ICON } from '../components/Icons';
 import Grundriss from '../components/Grundriss';
+import Beispiel from '../components/Beispiel';
+import Pilot from '../components/Pilot';
+import AlteAnker from '../components/AlteAnker';
 import { Kopf, Fuss } from '../components/Rahmen';
-import Buchung from '../components/Buchung';
-
-const DS_ICON = [ICON.server, ICON.noTrain, ICON.key, ICON.lock];
-
-type Item = (typeof KATEGORIEN)[number]['items'][number];
-function Kachel({ i, tint, klein = false }: { i: Item; tint: string; klein?: boolean }) {
-  return (
-    <div className={`kachel${klein ? ' klein' : ''}${i.logo ? ' mit-logo' : ''}`} data-tint={tint}>
-      <span className="kachel-ico">{i.logo ? <img src={i.logo} alt="" height={24} /> : <GlyphIcon g={i.glyph} />}</span>
-      <b>{i.name}</b>
-    </div>
-  );
-}
 
 export default function Home() {
-  const reihe1 = ALLE_INTEGRATIONEN.filter((_, k) => k % 2 === 0);
-  const reihe2 = ALLE_INTEGRATIONEN.filter((_, k) => k % 2 === 1);
   return (
     <>
-      <Kopf heim />
+      <AlteAnker />
+      <Kopf aktiv="start" termin />
 
       <main id="top">
-        {/* Hero als Planblatt: Raster, Grundriss, Maßkette */}
         <section className="hero">
           <div className="wrap">
             <div className="blatt">
               <Grundriss />
-              <p className="eyebrow">KI für Architektur- und Ingenieurbüros</p>
-              <h1>Vom Plan<br />zum Preisspiegel<span className="punkt">.</span></h1>
+              <p className="eyebrow">KI für Planung und Bau</p>
+              <h1>Vom Plan<br />zur Menge<span className="punkt">.</span></h1>
               <div className="hero-grid">
                 <div className="hero-text">
-                  <div className="masskette" aria-hidden="true">
-                    {['Plan und Modell', 'LV', 'Vergabe', 'Preisspiegel'].map((t, k, a) => <span className="mk-teil" key={t}><i />{t}{k === a.length - 1 && <i className="ende" />}</span>)}
-                  </div>
-                  <p className="lead">Die KI-Plattform für Ausschreibung und Vergabe. Jedes Gewerk, Ihre Regeln, alle Beteiligten in einem System.</p>
+                  <p className="lead lead-gross">{KERN.satz}</p>
                   <div className="cta-reihe">
-                    <a className="btn btn-akzent" href="#demo"><Icon d={ICON.play} size={16} />Demo ansehen</a>
-                    <a className="btn btn-linie" href="#fluss">So funktioniert es</a>
+                    <a className="btn btn-akzent" href="#termin">Pilot anfragen <Icon d={ICON.arrow} size={16} /></a>
+                    <a className="btn btn-linie" href="#einstiege">Für wen</a>
                   </div>
                 </div>
               </div>
 
-              <figure className="demo" id="demo">
-                <div className="demo-leiste"><span className="dots" aria-hidden="true"><i /><i /><i /></span><span>Demo · 1:21</span><span className="demo-hinweis">Prototyp, Beispielwerte</span></div>
-                <video src="/demo.mp4" poster="/demo-poster.webp" controls autoPlay muted loop playsInline preload="metadata" />
-              </figure>
+              <div className="start-beispiel"><Beispiel /></div>
             </div>
           </div>
         </section>
 
-        {/* Laufband der Integrationen */}
-        <section className="band" aria-label="Integrationen im Überblick">
-          <div className="wrap band-kopf"><p>Arbeitet mit Ihren Werkzeugen</p></div>
-          <div className="laufband">
-            <div className="spur">{[...reihe1, ...reihe1].map((i, k) => <Kachel key={k} i={i} tint={i.tint} klein />)}</div>
-            <div className="spur rueck">{[...reihe2, ...reihe2].map((i, k) => <Kachel key={k} i={i} tint={i.tint} klein />)}</div>
+        <section className="abschnitt" id="einstiege">
+          <div className="wrap einstiege">
+            {EINSTIEGE.map((e) => (
+              <a className="einstieg" href={e.href} key={e.id}>
+                <p className="eyebrow">{e.eyebrow}</p>
+                <h2>{e.titel}</h2>
+                <ul>{e.punkte.map((p) => <li key={p}>{p}</li>)}</ul>
+                <span className="einstieg-mehr">Mehr erfahren <Icon d={ICON.arrow} size={16} /></span>
+              </a>
+            ))}
           </div>
         </section>
 
-        {/* Große Scroll-Animation: alles fließt ins Modell, aus dem Modell entsteht das LV */}
-        <FlussScroll><Fluss /></FlussScroll>
-
-        {/* Grundsatz */}
-        <section className="grundsatz">
-          <div className="wrap grundsatz-in">
-            <p className="gs-satz">Die KI schreibt vor.<br /><em>Sie entscheiden.</em></p>
-            <p className="gs-text">Jede Menge mit Herkunft. Jede Nachricht erst nach Ihrer Freigabe.</p>
-          </div>
-        </section>
-
-        {/* Datenschutz */}
-        <section className="abschnitt" id="datenschutz">
-          <div className="wrap ds">
-            <div className="abschnitt-kopf">
-              <p className="eyebrow">Datenschutz</p>
-              <h2>Ihre Daten bleiben Ihre.</h2>
-            </div>
-            <div className="ds-grid">
-              {DATENSCHUTZ.map(([t, x], k) => (
-                <div className="ds-punkt" key={t}><span className="ds-ico"><Icon d={DS_ICON[k]} size={20} /></span><h3>{t}</h3><p>{x}</p></div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Pilot */}
-        <section className="pilot" id="pilot">
-          <div className="wrap pilot-kopf">
-            <p className="eyebrow">Pilotphase 2026</p>
-            <h2>Testen Sie plua ai an einem echten Projekt.</h2>
-            <p className="pilot-lead">Wählen Sie unten einen Termin — oder schreiben Sie uns, wir melden uns.</p>
-            <a className="btn btn-linie" href={`mailto:${KONTAKT_EMAIL}?subject=Pilot%20plua%20ai`}>
-              Per E-Mail anfragen <Icon d={ICON.arrow} size={16} />
-            </a>
-          </div>
-
-          <div className="wrap" id="termin">
-            <Buchung />
-          </div>
-        </section>
+        <Pilot />
       </main>
 
       <Fuss />

@@ -106,3 +106,47 @@ export const DATENSCHUTZ: [string, string][] = [
   ['Rechte je Projekt', 'Jeder sieht nur, was er sehen darf.'],
   ['Verschlüsselt', 'Jeder Zugriff protokolliert.'],
 ];
+
+// ---- Startseite und Seite für Bauunternehmen ----
+
+export const KERN = {
+  titel: 'Vom Plan zur Menge',
+  satz: 'Wir ermitteln vollautomatisch und vollständig alle Mengen, die sich aus Plänen ableiten lassen, VOB-konform und prüfbar. Jeder Wert ist im Plan belegt.',
+};
+
+/** Beispiel auf Startseite und Bauunternehmen-Seite. Werte sind Beispielwerte. */
+export const BEISPIEL = {
+  anfrage: 'Mengen für das Fliesengewerk im Bad.',
+  system: 'Analysiert vollautomatisch alle Pläne und vorliegenden Unterlagen.',
+  zeilen: [
+    ['Wandfliesen 40/15', '18,62', 'm²'],
+    ['Fliesen in Fensterleibung', '3,60', 'm'],
+    ['Abdichtung Boden W3-I', '6,84', 'm²'],
+    ['Abdichtung Wand Dusche W3-I', '5,46', 'm²'],
+    ['Dichtband an Ecken und Anschlüssen', '9,80', 'm'],
+  ] as [string, string, string][],
+  fuss: 'Jeder Wert ist im Plan belegt.',
+};
+
+export type Einstieg = { id: string; href: string; eyebrow: string; titel: string; punkte: string[] };
+
+export const EINSTIEGE: Einstieg[] = [
+  {
+    id: 'planer', href: '/planer/', eyebrow: 'Für Architekten, Planer und Generalunternehmer',
+    titel: 'Vom Plan zum Preisspiegel.',
+    punkte: ['Ausschreiben und LVs erstellen', 'Massen korrekt ermitteln', 'Nachträge vermeiden', 'Aufmaße prüfen'],
+  },
+  {
+    id: 'bau', href: '/bauunternehmen/', eyebrow: 'Für Bauunternehmen und Generalunternehmer',
+    titel: 'Mengen für Angebot, Kalkulation und Aufmaß.',
+    punkte: ['Ausschreibungen prüfen', 'Falsche Vordersätze und fehlende Leistungen erkennen', 'Intern kalkulieren', 'Aufmaße und Abschläge prüfbar abrechnen'],
+  },
+];
+
+export type Einsatz = { nr: string; titel: string; text: string };
+
+export const BAU_EINSATZ: Einsatz[] = [
+  { nr: '01', titel: 'Angebot', text: 'Ausschreibungen prüfen, falsche Vordersätze und fehlende Leistungen erkennen und passende Angebote abgeben.' },
+  { nr: '02', titel: 'Kalkulation', text: 'Mengen für die interne Kalkulation ermitteln, auch bei funktionalen Ausschreibungen ohne LV.' },
+  { nr: '03', titel: 'Aufmaß', text: 'Aufmaße und Abschläge prüfbar abrechnen und die Aufmaße der Nachunternehmer prüfen.' },
+];

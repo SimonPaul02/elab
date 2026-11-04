@@ -1,6 +1,6 @@
 # plua ai · Website
 
-One-Pager für plua ai: Next.js (App Router), statischer Export, keine weiteren Abhängigkeiten.
+Website von plua ai: Next.js (App Router), statischer Export, keine weiteren Abhängigkeiten.
 
 ```
 npm install
@@ -12,17 +12,20 @@ npm run build    # fertige Seite in ./out (auf jeden Webspace, Vercel, Netlify)
 
 | Datei | Inhalt |
 |---|---|
-| `app/page.tsx` | Die Seite: Hero als Planblatt (Raster in zwei Stärken, Grundriss, der sich zeichnet) mit Demo-Video, Laufband mit Werkzeugen, große Scroll-Animation in vier Takten, Grundsatz, Datenschutz, Pilot |
+| `app/page.tsx` | Startseite, bewusst kurz: „Vom Plan zur Menge“, Beispiel (Mengen Fliesengewerk im Bad), zwei Einstiege (Planer, Bauunternehmen), Pilot. Alte Anker wie `/#demo` und `/#fluss` leitet `components/AlteAnker.tsx` auf `/planer/` um |
+| `app/planer/page.tsx` | Für Planer, die frühere Startseite: Hero als Planblatt mit Demo-Video, Laufband mit Werkzeugen, große Scroll-Animation in vier Takten, Grundsatz, Datenschutz, Pilot |
+| `app/bauunternehmen/page.tsx` | Für Bauunternehmen und GUs: Mengen für Angebot, Kalkulation und Aufmaß, Beispiel, Grundsatz, Pilot |
+| `components/Beispiel.tsx`, `components/Pilot.tsx` | Beispielkarte und Pilot-Abschnitt mit Buchungskalender, von mehreren Seiten genutzt |
 | `components/Fluss.tsx`, `FlussScroll.tsx` | Die große Scroll-Animation in vier Takten: 1 Daten aus CAD/BIM, alten LVs, Fachplanern und Regelwerk · 2 Modell mit Mengen · 3 Positionen in der Reihenfolge, in der sie erkannt werden, dann nach Gewerken sortiert und nummeriert, das Trockenbau-LV wird zur Karte der Vergabe · 4 Vergabe als ein durchgehender Fluss (Versand an die Bieter, Rückfragen mit Freigabe, Angebote kommen ins Postfach und wandern von dort in ihre Spalte des Preisspiegels). Die Bühne bleibt beim Scrollen stehen, `FlussScroll` setzt den Fortschritt als `--P`, jeder Takt rechnet daraus seine eigene Zeitleiste `--p`. Eigenes Hochformat-Layout fürs Handy |
 | `components/Animationen.tsx` | Nicht mehr eingebunden (frühere Einzel-Animationen), kann gelöscht werden |
 | `app/globals.css` | Gestaltung. Farben als Tokens oben, heller und dunkler Modus automatisch |
-| `lib/content.ts` | Alle Texte, Integrationen, Ablauf, Prüfprotokoll, Datenschutz, Kontaktadresse |
+| `lib/content.ts` | Alle Texte, Integrationen, Ablauf, Prüfprotokoll, Datenschutz, Kontaktadresse, Kernsatz, Beispiel, Einstiege |
 | `components/Icons.tsx` | Logo plua ai und neutrale Symbole je Kategorie |
 | `public/demo.mp4` | Demo-Video Fliesenarbeiten (1920 × 1200, 1:21) mit Standbild `demo-poster.webp` |
 | `app/impressum/page.tsx` | Impressum (eigene Seite unter `/impressum/`), Pflichtangaben nach § 5 DDG |
 | `app/datenschutzerklaerung/page.tsx` | Datenschutzerklärung unter `/datenschutzerklaerung/`, Pflichtangaben nach Art. 13 DSGVO |
 | `components/Buchung.tsx` | Buchungskalender von Cal.com (`plua-ai/intro`), inline und beim Seitenaufruf geladen. Das Embed zieht dabei Sentry und Google-Inhalte nach und setzt das Cookie `__cf_bm` — steht so in der Datenschutzerklärung |
-| `components/Rahmen.tsx` | Kopf und Fuß, von Startseite und Impressum gemeinsam genutzt |
+| `components/Rahmen.tsx` | Kopf und Fuß aller Seiten; Navigation „Für Planer“ und „Für Bauunternehmen“ |
 | `demo-video/` | Alles zum Demo-Video: klickbarer Prototyp, Playwright-Aufnahme, Master und frühere Fassungen. Eigener README darin. Per `.vercelignore` vom Deploy ausgenommen |
 
 ## Logos der Integrationen
