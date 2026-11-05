@@ -459,9 +459,45 @@ p { margin: 0; }
 @media (max-width: 820px) { .einstiege { grid-template-columns: minmax(0, 1fr); } }
 
 /* Bauunternehmen: Beispiel */
-.bau-beispiel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: 48px; align-items: center; }
-.herkunft-bild { margin: 0; border: 1px solid var(--rule); border-radius: 10px; background: var(--sheet); box-shadow: var(--shadow); overflow: hidden; }
-.herkunft-bild img { display: block; width: 100%; height: auto; }
+.bau-beispiel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 48px; align-items: start; }
+.bau-beispiel-text { display: grid; gap: 32px; }
 @media (max-width: 960px) { .bau-beispiel { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
+
+/* Grafik „Herkunft im Plan“ (components/Herkunft.tsx) */
+.herkunft { margin: 0; border: 1px solid var(--rule); border-radius: 10px; background: var(--sheet); box-shadow: var(--shadow); }
+.hk-in { display: grid; gap: 18px; padding: clamp(16px, 2.6vw, 26px); }
+.hk-plan { display: block; width: 100%; height: auto; }
+.hk-wand { fill: color-mix(in srgb, var(--ink-3) 70%, var(--sheet)); }
+.hk-luecke { fill: var(--sheet); }
+.hk-fenster { fill: var(--sheet); stroke: var(--ink-3); stroke-width: 1.2; }
+.hk-fenster-glas { stroke: var(--ink-3); stroke-width: 1.2; }
+.hk-dusche { fill: color-mix(in srgb, var(--blue) 9%, var(--sheet)); stroke: var(--ink-3); stroke-width: 1; }
+.hk-moebel { fill: none; stroke: var(--ink-3); stroke-width: 1; }
+.hk-mass line { stroke: var(--ink-3); stroke-width: 1; }
+.hk-mass text { fill: var(--ink-2); font-family: var(--f-mono); font-size: 13px; }
+.hk-raum { fill: var(--ink); font-family: var(--f-body); font-weight: 600; font-size: 16px; }
+.hk-klein { fill: var(--ink-3); font-family: var(--f-mono); font-size: 11px; }
+.hk-linie { stroke: var(--accent); stroke-width: 5; }
+.hk-abzug-grund { stroke: var(--sheet); stroke-width: 7; }
+.hk-abzug { stroke: var(--ink-2); stroke-width: 4; stroke-dasharray: 5 4; }
+.hk-marke circle { fill: var(--accent); }
+.hk-marke text { fill: var(--on-accent); font-family: var(--f-body); font-weight: 600; font-size: 12px; }
+.hk-marke-abzug circle { fill: var(--sheet); stroke: var(--ink-2); stroke-width: 1.5; }
+.hk-marke-abzug text { fill: var(--ink-2); font-size: 10.5px; }
+.hk-plan .is-dim { opacity: 0.18; }
+.hk-plan line, .hk-plan g { transition: opacity 0.15s; }
+.hk-kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 0 6px 10px; border-bottom: 1px solid var(--rule); }
+.hk-kopf strong { font-weight: 600; font-size: 17px; }
+.hk-summe { font-size: 19px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+.hk-zeilen { list-style: none; margin: 6px 0 0; padding: 0; }
+.hk-zeilen li { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto 64px; gap: 12px; align-items: center; padding: 6px; border-radius: 6px; }
+.hk-zeilen li.is-aktiv { background: var(--accent-soft); }
+.hk-nr { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-size: 12px; font-weight: 600; }
+.hk-nr.abzug { background: transparent; border: 1.5px solid var(--ink-2); color: var(--ink-2); font-size: 10px; }
+.hk-name small { color: var(--ink-3); font-size: 13px; }
+.hk-calc { color: var(--ink-2); font-size: 14px; white-space: nowrap; }
+.hk-wert { font-size: 15px; text-align: right; font-variant-numeric: tabular-nums; }
+.hk-quelle { margin-top: 12px; padding: 0 6px; font-size: 12px; color: var(--ink-3); }
+@media (max-width: 520px) { .hk-zeilen li { grid-template-columns: 28px minmax(0, 1fr) 58px; } .hk-calc { display: none; } }
 @media (prefers-reduced-motion: reduce) { .einstieg { transition: none; } }
 @media (max-width: 520px) { .bsp-schritt { grid-template-columns: minmax(0, 1fr); gap: 2px; } }

@@ -4,6 +4,8 @@ import type { Metadata } from 'next';
 import { KERN } from '../../lib/content';
 import { Icon, ICON } from '../../components/Icons';
 import Grundriss from '../../components/Grundriss';
+import Beispiel from '../../components/Beispiel';
+import Herkunft from '../../components/Herkunft';
 import Pilot from '../../components/Pilot';
 import { Kopf, Fuss } from '../../components/Rahmen';
 
@@ -48,13 +50,14 @@ export default function Bauunternehmen() {
 
         <section className="abschnitt">
           <div className="wrap bau-beispiel">
-            <div className="abschnitt-kopf">
-              <h2>Alle Mengen im Detail.</h2>
-              <p className="abschnitt-lead">Jede Menge ist mit ihrer Herkunft hinterlegt, direkt im PDF-Plan markiert.</p>
+            <div className="bau-beispiel-text">
+              <div className="abschnitt-kopf">
+                <h2>Alle Mengen im Detail.</h2>
+                <p className="abschnitt-lead">Jede Menge ist mit ihrer Herkunft hinterlegt, direkt im PDF-Plan markiert.</p>
+              </div>
+              <Beispiel />
             </div>
-            <figure className="herkunft-bild">
-              <img src="/screens/mengen-herkunft.webp" width={1600} height={896} loading="lazy" alt="Mengenliste Fliesenarbeiten: Die Zeile Wandfliese 39,05 m² ist aufgeklappt mit jedem Rechenschritt, daneben der Grundriss mit allen Wandseiten rot markiert und nummeriert." />
-            </figure>
+            <Herkunft />
           </div>
         </section>
 
