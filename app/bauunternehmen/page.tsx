@@ -4,7 +4,6 @@ import type { Metadata } from 'next';
 import { KERN } from '../../lib/content';
 import { Icon, ICON } from '../../components/Icons';
 import Grundriss from '../../components/Grundriss';
-import Beispiel from '../../components/Beispiel';
 import Pilot from '../../components/Pilot';
 import { Kopf, Fuss } from '../../components/Rahmen';
 
@@ -31,7 +30,7 @@ export default function Bauunternehmen() {
                     {['Plan', 'Angebot', 'Kalkulation', 'Aufmaß'].map((t, k, a) => <span className="mk-teil" key={t}><i />{t}{k === a.length - 1 && <i className="ende" />}</span>)}
                   </div>
                   <p className="lead">{KERN.satz}</p>
-                  {KERN.zusatz.map((t) => <p className="lead-zusatz" key={t}>{t}</p>)}
+                  {KERN.zusatz.map((t) => <p className="lead lead-zusatz" key={t}>{t}</p>)}
                   <div className="cta-reihe">
                     <a className="btn btn-akzent" href="#termin">Pilot anfragen <Icon d={ICON.arrow} size={16} /></a>
                     <a className="btn btn-linie" href="#demo"><Icon d={ICON.play} size={16} />Demo ansehen</a>
@@ -50,11 +49,12 @@ export default function Bauunternehmen() {
         <section className="abschnitt">
           <div className="wrap bau-beispiel">
             <div className="abschnitt-kopf">
-              <p className="eyebrow">Beispiel</p>
-              <h2>Mengen, die man sonst übersieht.</h2>
-              <p className="abschnitt-lead">Nicht nur Flächen: auch Leibungen, Abdichtung und Anschlüsse, jeweils nach VOB/C ermittelt.</p>
+              <h2>Alle Mengen im Detail.</h2>
+              <p className="abschnitt-lead">Jede Menge ist mit ihrer Herkunft hinterlegt, direkt im PDF-Plan markiert.</p>
             </div>
-            <Beispiel />
+            <figure className="herkunft-bild">
+              <img src="/screens/mengen-herkunft.webp" width={1600} height={896} loading="lazy" alt="Mengenliste Fliesenarbeiten: Die Zeile Wandfliese 39,05 m² ist aufgeklappt mit jedem Rechenschritt, daneben der Grundriss mit allen Wandseiten rot markiert und nummeriert." />
+            </figure>
           </div>
         </section>
 

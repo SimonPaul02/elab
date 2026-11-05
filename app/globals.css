@@ -426,8 +426,9 @@ p { margin: 0; }
 
 /* ---- Startseite (Vom Plan zur Menge) und Seite für Bauunternehmen ---- */
 .kopf-nav a[aria-current='page'] { color: var(--ink); font-weight: 600; }
-.lead-zusatz { color: var(--ink-2); max-width: 60ch; margin-top: 16px; }
 .lead-gross { font-size: clamp(18px, 1.9vw, 22px); color: var(--ink); max-width: 46ch; margin-top: 30px; }
+/* Weitere Absätze der Einleitung: gleiche Schrift wie der erste, nur engerer Abstand. */
+.lead-zusatz { margin-top: 16px; }
 
 /* Beispiel: Anfrage, System, Mengen */
 .start-beispiel { margin-top: 64px; max-width: 760px; }
@@ -458,7 +459,9 @@ p { margin: 0; }
 @media (max-width: 820px) { .einstiege { grid-template-columns: minmax(0, 1fr); } }
 
 /* Bauunternehmen: Beispiel */
-.bau-beispiel { display: grid; gap: 44px; }
-.bau-beispiel .beispiel { max-width: 760px; }
+.bau-beispiel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: 48px; align-items: center; }
+.herkunft-bild { margin: 0; border: 1px solid var(--rule); border-radius: 10px; background: var(--sheet); box-shadow: var(--shadow); overflow: hidden; }
+.herkunft-bild img { display: block; width: 100%; height: auto; }
+@media (max-width: 960px) { .bau-beispiel { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
 @media (prefers-reduced-motion: reduce) { .einstieg { transition: none; } }
 @media (max-width: 520px) { .bsp-schritt { grid-template-columns: minmax(0, 1fr); gap: 2px; } }

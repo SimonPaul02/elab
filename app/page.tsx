@@ -24,7 +24,7 @@ export default function Home() {
               <div className="hero-grid">
                 <div className="hero-text">
                   <p className="lead lead-gross">{KERN.satz}</p>
-                  {KERN.zusatz.map((t) => <p className="lead-zusatz" key={t}>{t}</p>)}
+                  {KERN.zusatz.map((t) => <p className="lead lead-gross lead-zusatz" key={t}>{t}</p>)}
                   <div className="cta-reihe">
                     <a className="btn btn-akzent" href="#termin">Pilot anfragen <Icon d={ICON.arrow} size={16} /></a>
                     <a className="btn btn-linie" href="#einstiege">Für wen</a>
