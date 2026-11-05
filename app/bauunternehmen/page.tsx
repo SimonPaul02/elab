@@ -33,10 +33,15 @@ export default function Bauunternehmen() {
                   <p className="lead">{KERN.satz}</p>
                   <div className="cta-reihe">
                     <a className="btn btn-akzent" href="#termin">Pilot anfragen <Icon d={ICON.arrow} size={16} /></a>
-                    <a className="btn btn-linie" href="#einsatz">Wofür</a>
+                    <a className="btn btn-linie" href="#demo"><Icon d={ICON.play} size={16} />Demo ansehen</a>
                   </div>
                 </div>
               </div>
+
+              <figure className="demo" id="demo">
+                <div className="demo-leiste"><span className="dots" aria-hidden="true"><i /><i /><i /></span><span>Demo · 1:21</span><span className="demo-hinweis">Prototyp, Beispielwerte</span></div>
+                <video src="/demo.mp4" poster="/demo-poster.webp" controls autoPlay muted loop playsInline preload="metadata" />
+              </figure>
             </div>
           </div>
         </section>
