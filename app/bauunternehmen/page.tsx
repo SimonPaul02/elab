@@ -1,7 +1,7 @@
 // Seite für Bauunternehmen und Generalunternehmer: Mengen für Angebot, Kalkulation und Aufmaß.
 // Bewusst ohne Versprechen zu Anbindungen, die es noch nicht gibt (z. B. Aufmaß als GAEB X31/REB).
 import type { Metadata } from 'next';
-import { BAU_EINSATZ, KERN } from '../../lib/content';
+import { KERN } from '../../lib/content';
 import { Icon, ICON } from '../../components/Icons';
 import Grundriss from '../../components/Grundriss';
 import Beispiel from '../../components/Beispiel';
@@ -31,6 +31,7 @@ export default function Bauunternehmen() {
                     {['Plan', 'Angebot', 'Kalkulation', 'Aufmaß'].map((t, k, a) => <span className="mk-teil" key={t}><i />{t}{k === a.length - 1 && <i className="ende" />}</span>)}
                   </div>
                   <p className="lead">{KERN.satz}</p>
+                  {KERN.zusatz.map((t) => <p className="lead-zusatz" key={t}>{t}</p>)}
                   <div className="cta-reihe">
                     <a className="btn btn-akzent" href="#termin">Pilot anfragen <Icon d={ICON.arrow} size={16} /></a>
                     <a className="btn btn-linie" href="#demo"><Icon d={ICON.play} size={16} />Demo ansehen</a>
@@ -46,26 +47,7 @@ export default function Bauunternehmen() {
           </div>
         </section>
 
-        <section className="abschnitt" id="einsatz">
-          <div className="wrap einsatz">
-            <div className="abschnitt-kopf">
-              <p className="eyebrow">Einsatz</p>
-              <h2>Eine Mengenermittlung für das ganze Projekt.</h2>
-              <p className="abschnitt-lead">Dieselben Mengen werden in jedem Projekt mehrfach ermittelt und geprüft. plua ai ermittelt sie einmal, belegt im Plan, und Sie nutzen sie vom Angebot bis zur Schlussrechnung.</p>
-            </div>
-            <ol className="einsatz-liste">
-              {BAU_EINSATZ.map((e) => (
-                <li key={e.nr}>
-                  <span className="einsatz-nr mono">{e.nr}</span>
-                  <h3>{e.titel}</h3>
-                  <p>{e.text}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        <section className="abschnitt abschnitt-dicht">
+        <section className="abschnitt">
           <div className="wrap bau-beispiel">
             <div className="abschnitt-kopf">
               <p className="eyebrow">Beispiel</p>

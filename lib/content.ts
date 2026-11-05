@@ -111,7 +111,12 @@ export const DATENSCHUTZ: [string, string][] = [
 
 export const KERN = {
   titel: 'Vom Plan zur Menge',
-  satz: 'Wir ermitteln vollautomatisch und vollständig alle Mengen, die sich aus Plänen ableiten lassen, VOB-konform und prüfbar. Jeder Wert ist im Plan belegt.',
+  satz: 'Wir ermitteln alle Mengen, die sich aus Plänen ableiten lassen, nach Regeln, die wir auf Sie abstimmen. VOB-konform und prüfbar, jeder Wert ist im Plan belegt.',
+  /** Absätze unter dem Einleitungssatz. */
+  zusatz: [
+    'Uns ist der Detailgrad wichtig. Statt einer groben Standardlösung erkennt plua ai auch, was sich erst aus der Kombination mehrerer Pläne, aus Ihren Regeln oder aus Erfahrungswerten ergibt.',
+    'Wir nehmen Ihnen den mechanisch aufwendigen Teil ab. Zu jeder Zahl zeigt plua ai die Herkunft, direkt im Plan markiert. So können Sie alles prüfen und darauf Ihre Abrechnung oder Kalkulation aufbauen.',
+  ],
 };
 
 /** Beispiel auf Startseite und Bauunternehmen-Seite. Werte sind Beispielwerte. */
@@ -141,12 +146,4 @@ export const EINSTIEGE: Einstieg[] = [
     titel: 'Mengen für Angebot, Kalkulation und Aufmaß.',
     punkte: ['Ausschreibungen prüfen', 'Falsche Vordersätze und fehlende Leistungen erkennen', 'Intern kalkulieren', 'Aufmaße und Abschläge prüfbar abrechnen'],
   },
-];
-
-export type Einsatz = { nr: string; titel: string; text: string };
-
-export const BAU_EINSATZ: Einsatz[] = [
-  { nr: '01', titel: 'Angebot', text: 'Ausschreibungen prüfen, falsche Vordersätze und fehlende Leistungen erkennen und passende Angebote abgeben.' },
-  { nr: '02', titel: 'Kalkulation', text: 'Mengen für die interne Kalkulation ermitteln, auch bei funktionalen Ausschreibungen ohne LV.' },
-  { nr: '03', titel: 'Aufmaß', text: 'Aufmaße und Abschläge prüfbar abrechnen und die Aufmaße der Nachunternehmer prüfen.' },
 ];
